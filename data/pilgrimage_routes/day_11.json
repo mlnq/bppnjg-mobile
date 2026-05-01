@@ -1,0 +1,75 @@
+{
+  "dayNumber": 11,
+  "title": "Gielniów – Chełsty",
+  "date": "2025-08-09",
+  "totalDistanceKm": 28.09,
+  "startTown": null,
+  "endTown": "Chełsty",
+  "waypointCount": 8,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 51.3719008,
+      "longitude": 20.4084863,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 8.307
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 51.303115,
+      "longitude": 20.3618293,
+      "name": "Kościół św. Doroty i Aniołów",
+      "townName": "Petrykoza",
+      "distanceToNextKm": 4.681
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 51.3007616,
+      "longitude": 20.2946031,
+      "name": "Kościół św. Jana Chrzciciela",
+      "townName": "Białaczów",
+      "distanceToNextKm": 4.575
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 51.2806111,
+      "longitude": 20.2372364,
+      "name": null,
+      "townName": "Ossa",
+      "distanceToNextKm": 3.065
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 51.2563211,
+      "longitude": 20.2164063,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 1.304
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 51.2480186,
+      "longitude": 20.2031665,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 2.166
+    },
+    {
+      "orderIndex": 6,
+      "latitude": 51.2488834,
+      "longitude": 20.1720836,
+      "name": "Kościół św. Mikołaja",
+      "townName": "Żarnów",
+      "distanceToNextKm": 3.99
+    },
+    {
+      "orderIndex": 7,
+      "latitude": 51.2157154,
+      "longitude": 20.1502297,
+      "name": "Parafia Miłosierdzia Bożego",
+      "townName": "Chełsty",
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "dayNumber": 9,
+  "title": "Zbrosza Duża – Kostrzyn",
+  "date": "2025-08-07",
+  "totalDistanceKm": 63.86,
+  "startTown": null,
+  "endTown": "Kostrzyn",
+  "waypointCount": 6,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 51.6511953,
+      "longitude": 20.9535813,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 17.449
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 51.5764324,
+      "longitude": 20.7313935,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 25.39
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 51.7559923,
+      "longitude": 20.9588034,
+      "name": "Parafia św. Trójcy",
+      "townName": "Białobrzegi",
+      "distanceToNextKm": 8.484
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 51.6796901,
+      "longitude": 20.9585799,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 6.921
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 51.6322247,
+      "longitude": 20.8936798,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 5.618
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 51.6256592,
+      "longitude": 20.8129761,
+      "name": "Parafia św. Stanisława",
+      "townName": "Kostrzyn",
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

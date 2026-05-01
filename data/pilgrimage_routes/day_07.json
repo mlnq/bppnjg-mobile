@@ -1,0 +1,83 @@
+{
+  "dayNumber": 7,
+  "title": "Siennica – Góra Kalwaria",
+  "date": "2025-08-05",
+  "totalDistanceKm": 50.72,
+  "startTown": "Siennica",
+  "endTown": null,
+  "waypointCount": 9,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 52.094142,
+      "longitude": 21.6156833,
+      "name": "Parafia św. Stanisława",
+      "townName": "Siennica",
+      "distanceToNextKm": 8.114
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 52.0644025,
+      "longitude": 21.5072615,
+      "name": "Parafia św. Trójcy",
+      "townName": "Kołbiel",
+      "distanceToNextKm": 1.899
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 52.0615224,
+      "longitude": 21.4798765,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 17.912
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 51.9970855,
+      "longitude": 21.2399183,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.326
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 51.9942912,
+      "longitude": 21.2384713,
+      "name": "Sanktuarium o. Papczyńskiego",
+      "townName": "Góra Kalwaria",
+      "distanceToNextKm": 0.378
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 51.9974374,
+      "longitude": 21.236367,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 3.215
+    },
+    {
+      "orderIndex": 6,
+      "latitude": 51.976546,
+      "longitude": 21.2039046,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 13.724
+    },
+    {
+      "orderIndex": 7,
+      "latitude": 52.0420946,
+      "longitude": 21.3737971,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 5.15
+    },
+    {
+      "orderIndex": 8,
+      "latitude": 52.0240009,
+      "longitude": 21.3044912,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

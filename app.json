@@ -1,38 +1,57 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "bppnjg-mobile",
+    "slug": "bppnjg-mobile",
     "version": "1.0.0",
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "experiments": {
       "tsconfigPaths": true
     },
-
-    "plugins": [],
-
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Aplikacja używa Twojej lokalizacji, aby pokazać aktualny etap pielgrzymki i odległość do kolejnych punktów trasy."
+        }
+      ],
+      "expo-notifications",
+      "expo-router"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "pl.bppnjg.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Aplikacja używa Twojej lokalizacji, aby pokazać aktualny etap pielgrzymki i odległość do kolejnych punktów trasy."
+      }
     },
     "android": {
+      "package": "pl.bppnjg.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4b8a7379-79fb-463b-af10-c625827f9459"
+      }
+    },
+    "owner": "bppnjg"
   }
 }

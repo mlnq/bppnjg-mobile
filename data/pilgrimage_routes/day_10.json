@@ -1,0 +1,67 @@
+{
+  "dayNumber": 10,
+  "title": "Kostrzyn – Gielniów",
+  "date": "2025-08-08",
+  "totalDistanceKm": 57.85,
+  "startTown": "Kostrzyn",
+  "endTown": null,
+  "waypointCount": 7,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 51.5763903,
+      "longitude": 20.7315463,
+      "name": null,
+      "townName": "Kostrzyn",
+      "distanceToNextKm": 8.169
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 51.5342561,
+      "longitude": 20.6347568,
+      "name": "Parafia św. Macieja",
+      "townName": "Klwów",
+      "distanceToNextKm": 15.473
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 51.4227262,
+      "longitude": 20.5011415,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 2.79
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 51.4004681,
+      "longitude": 20.482567,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 12.577
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 51.481883,
+      "longitude": 20.6085377,
+      "name": "Kościół śś. Szymona i Judy Tadeusza",
+      "townName": "Gielniów",
+      "distanceToNextKm": 3.272
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 51.473203,
+      "longitude": 20.5633985,
+      "name": null,
+      "townName": "Gielniów",
+      "distanceToNextKm": 15.565
+    },
+    {
+      "orderIndex": 6,
+      "latitude": 51.371987,
+      "longitude": 20.408338,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

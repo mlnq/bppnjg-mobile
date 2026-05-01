@@ -1,0 +1,59 @@
+{
+  "dayNumber": 13,
+  "title": "Strzelce Małe – Pacierzów",
+  "date": "2025-08-11",
+  "totalDistanceKm": 25.19,
+  "startTown": "Strzelce Małe",
+  "endTown": null,
+  "waypointCount": 6,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 51.0515225,
+      "longitude": 19.665221,
+      "name": null,
+      "townName": "Strzelce Małe",
+      "distanceToNextKm": 3.544
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 51.0321185,
+      "longitude": 19.6250133,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 8.287
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 50.9991334,
+      "longitude": 19.5187904,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 5.008
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 50.9661416,
+      "longitude": 19.4701004,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 4.428
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 50.9382029,
+      "longitude": 19.4250626,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 3.92
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 50.9067142,
+      "longitude": 19.3999103,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

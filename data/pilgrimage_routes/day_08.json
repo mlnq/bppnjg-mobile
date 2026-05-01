@@ -1,0 +1,67 @@
+{
+  "dayNumber": 8,
+  "title": "Góra Kalwaria – Zbrosza Duża",
+  "date": "2025-08-06",
+  "totalDistanceKm": 69.6,
+  "startTown": "Góra Kalwaria",
+  "endTown": null,
+  "waypointCount": 7,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 51.976546,
+      "longitude": 21.2039046,
+      "name": "Sanktuarium o. Papczyńskiego",
+      "townName": "Góra Kalwaria",
+      "distanceToNextKm": 8.18
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 51.9051052,
+      "longitude": 21.1754512,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 6.4
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 51.8612158,
+      "longitude": 21.1151195,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 15.796
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 51.7561979,
+      "longitude": 20.9604031,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 21.872
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 51.9059031,
+      "longitude": 21.166855,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 11.895
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 51.8166104,
+      "longitude": 21.0714625,
+      "name": null,
+      "townName": "Zbrosza Duża",
+      "distanceToNextKm": 5.455
+    },
+    {
+      "orderIndex": 6,
+      "latitude": 51.809874,
+      "longitude": 20.9928629,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

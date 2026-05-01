@@ -7,7 +7,7 @@ interface EditScreenInfoProps {
 export const EditScreenInfo: React.FC<EditScreenInfoProps> = ({ path }) => {
   const title = 'Open up the code for this screen:';
   const description =
-    'Change any of the text, save the file, and your app will automatically update.';
+    'hello Change any of the text, save the file, and your app will automatically update.';
 
   return (
     <View>

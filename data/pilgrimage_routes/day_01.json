@@ -1,0 +1,60 @@
+{
+  "dayNumber": 1,
+  "title": "Białystok – Suraż",
+  "date": "2025-07-30",
+  "totalDistanceKm": 31.5,
+  "startTown": "Białystok",
+  "endTown": "Suraż",
+  "waypointCount": 6,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 53.132637,
+      "longitude": 23.1630178,
+      "name": "Bazylika Wniebowzięcia NMP",
+      "townName": "Białystok",
+      "note": "Test: zbiórka pielgrzymów przy bazylice 15 minut przed wymarszem.",
+      "distanceToNextKm": 6.976
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 53.0815914,
+      "longitude": 23.1022551,
+      "name": "Parafia św. Józefa Rzemieślnika",
+      "townName": "Księżyno",
+      "distanceToNextKm": 5.102
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 53.0367403,
+      "longitude": 23.0861529,
+      "name": null,
+      "townName": "Pomigacze",
+      "distanceToNextKm": 3.365
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 53.0128225,
+      "longitude": 23.0553281,
+      "name": null,
+      "townName": "Urząd Gminy Turośń Kościelna",
+      "distanceToNextKm": 10.766
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 52.9421977,
+      "longitude": 22.945333,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 5.291
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 52.979467,
+      "longitude": 22.9944361,
+      "name": "Parafia Bożego Ciała",
+      "townName": "Suraż",
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

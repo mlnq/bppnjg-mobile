@@ -1,0 +1,51 @@
+{
+  "dayNumber": 14,
+  "title": "Pacierzów – Jasna Góra",
+  "date": "2025-08-12",
+  "totalDistanceKm": 43.88,
+  "startTown": "OSP Pacierzów",
+  "endTown": "Częstochowa",
+  "waypointCount": 5,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 50.9065513,
+      "longitude": 19.3992336,
+      "name": null,
+      "townName": "OSP Pacierzów",
+      "distanceToNextKm": 11.283
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 50.8327649,
+      "longitude": 19.2888607,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 4.051
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 50.8199328,
+      "longitude": 19.23488,
+      "name": null,
+      "townName": "Sanktuarium NMP Mstowskiej",
+      "distanceToNextKm": 9.721
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 50.8125957,
+      "longitude": 19.0970058,
+      "name": "Sanktuarium o. Pio",
+      "townName": "Siedlec",
+      "distanceToNextKm": 18.83
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 50.8589639,
+      "longitude": 19.3548975,
+      "name": "Jasna Góra",
+      "townName": "Częstochowa",
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

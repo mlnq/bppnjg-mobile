@@ -1,0 +1,59 @@
+{
+  "dayNumber": 5,
+  "title": "Miedzna – Wierzbno",
+  "date": "2025-08-03",
+  "totalDistanceKm": 38.55,
+  "startTown": "Miedzna",
+  "endTown": null,
+  "waypointCount": 6,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 52.4673575,
+      "longitude": 22.088521,
+      "name": "Parafia Zwiastowania NMP",
+      "townName": "Miedzna",
+      "distanceToNextKm": 8.946
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 52.3988872,
+      "longitude": 22.0192313,
+      "name": "Bazylika Wniebowzięcia NMP",
+      "townName": "Węgrów",
+      "distanceToNextKm": 4.433
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 52.375804,
+      "longitude": 21.9659705,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 10.363
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 52.3087497,
+      "longitude": 21.8600307,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 9.79
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 52.3712146,
+      "longitude": 21.9615768,
+      "name": "Parafia śś. Piotra i Pawła",
+      "townName": "Wierzbno",
+      "distanceToNextKm": 5.02
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 52.3322966,
+      "longitude": 21.9241079,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

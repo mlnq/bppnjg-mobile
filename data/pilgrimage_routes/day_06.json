@@ -1,0 +1,67 @@
+{
+  "dayNumber": 6,
+  "title": "Wierzbno – Siennica",
+  "date": "2025-08-04",
+  "totalDistanceKm": 47.94,
+  "startTown": "Wierzbno",
+  "endTown": null,
+  "waypointCount": 7,
+  "waypoints": [
+    {
+      "orderIndex": 0,
+      "latitude": 52.3087497,
+      "longitude": 21.8600307,
+      "name": "Parafia śś. Piotra i Pawła",
+      "townName": "Wierzbno",
+      "distanceToNextKm": 11.564
+    },
+    {
+      "orderIndex": 1,
+      "latitude": 52.2092236,
+      "longitude": 21.8107272,
+      "name": "Kościół Wniebowzięcia NMP",
+      "townName": "Kałuszyn",
+      "distanceToNextKm": 4.389
+    },
+    {
+      "orderIndex": 2,
+      "latitude": 52.1700093,
+      "longitude": 21.8033497,
+      "name": "Parafia św. Teresy",
+      "townName": "Mrozy",
+      "distanceToNextKm": 0.423
+    },
+    {
+      "orderIndex": 3,
+      "latitude": 52.1670112,
+      "longitude": 21.7995271,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 14.937
+    },
+    {
+      "orderIndex": 4,
+      "latitude": 52.094142,
+      "longitude": 21.6156833,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 10.586
+    },
+    {
+      "orderIndex": 5,
+      "latitude": 52.152752,
+      "longitude": 21.7378704,
+      "name": "Parafia św. Stanisława",
+      "townName": "Siennica",
+      "distanceToNextKm": 6.037
+    },
+    {
+      "orderIndex": 6,
+      "latitude": 52.1162554,
+      "longitude": 21.6723946,
+      "name": null,
+      "townName": null,
+      "distanceToNextKm": 0.0
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "cli": {
+    "version": ">= 18.8.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "development",
+        "APP_BUNDLE_IDENTIFIER": "pl.bppnjg.app.dev",
+        "APP_ANDROID_APPLICATION_ID": "pl.bppnjg.app.dev",
+        "APP_ENABLE_FIREBASE": "false"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "preview",
+        "APP_BUNDLE_IDENTIFIER": "pl.bppnjg.app",
+        "APP_ANDROID_APPLICATION_ID": "pl.bppnjg.app",
+        "APP_ENABLE_FIREBASE": "true"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "APP_VARIANT": "production",
+        "APP_BUNDLE_IDENTIFIER": "pl.bppnjg.app",
+        "APP_ANDROID_APPLICATION_ID": "pl.bppnjg.app",
+        "APP_ENABLE_FIREBASE": "true"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
