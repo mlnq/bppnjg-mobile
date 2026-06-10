@@ -1,1 +1,1 @@
-export type AppTab = 'home' | 'route' | 'prayer';
+export type AppTab = 'home' | 'route' | 'prayer' | 'info';

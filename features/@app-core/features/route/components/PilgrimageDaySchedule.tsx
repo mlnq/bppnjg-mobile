@@ -1,23 +1,77 @@
 import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
-import type { PilgrimageDay, Town } from '../../../constants/pilgrimageRoute';
+import type { PilgrimageDay } from '../../../constants/pilgrimageRoute';
 import { useUserLocation } from '../../../hooks/useUserLocation';
 import { getCurrentRouteLocation } from '../../../utils/pilgrimageCurrentLocation';
 import { PilgrimageDayScheduleItem } from './PilgrimageDayScheduleItem';
-import { PilgrimageScheduleBreakBadge } from './PilgrimageScheduleBreakBadge';
+import { PilgrimageScheduleSegmentBadge } from './PilgrimageScheduleSegmentBadge';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
 type PilgrimageDayScheduleProps = {
   day: PilgrimageDay;
-  towns: readonly Town[];
+  isCurrentDay?: boolean;
+  now?: Date;
 };
 
-export function PilgrimageDaySchedule({ day, towns }: PilgrimageDayScheduleProps) {
-  const { currentLocation } = useUserLocation();
-  const currentRouteLocation = getCurrentRouteLocation(day, currentLocation, towns);
-  const timelineColor = '#F2C8DA';
+function isRenderableScheduleItem(item: PilgrimageDay['schedule'][number]) {
+  const townName = item.townName ?? '';
+  const hasRealTownName = townName.trim() !== '' && !/^Punkt \d+$/.test(townName);
+  const hasRealTitle = typeof item.title === 'string' && item.title.trim() !== '';
+  const hasRealNote = typeof item.note === 'string' && item.note.trim() !== '';
+
+  return hasRealTownName || hasRealTitle || hasRealNote;
+}
+
+function getScheduleItemRenderKey(item: PilgrimageDay['schedule'][number], index: number) {
+  return `${item.id}:${item.waypointId}:${item.time}:${index}`;
+}
+
+function getVisibleCurrentLocationId(
+  schedule: PilgrimageDay['schedule'],
+  currentLocationId: string | null
+) {
+  if (!currentLocationId) {
+    return null;
+  }
+
+  const currentIndex = schedule.findIndex((item) => item.id === currentLocationId);
+
+  if (currentIndex === -1) {
+    return null;
+  }
+
+  for (let index = currentIndex; index >= 0; index -= 1) {
+    if (isRenderableScheduleItem(schedule[index])) {
+      return schedule[index].id;
+    }
+  }
+
+  for (let index = currentIndex + 1; index < schedule.length; index += 1) {
+    if (isRenderableScheduleItem(schedule[index])) {
+      return schedule[index].id;
+    }
+  }
+
+  return null;
+}
+
+export function PilgrimageDaySchedule({
+  day,
+  isCurrentDay = true,
+  now = new Date(),
+}: PilgrimageDayScheduleProps) {
+  const { currentLocation, locationSource } = useUserLocation();
+  const currentRouteLocation = isCurrentDay
+    ? getCurrentRouteLocation(day, currentLocation, now, locationSource)
+    : null;
+  const currentVisibleLocationId = getVisibleCurrentLocationId(
+    day.schedule,
+    currentRouteLocation?.location.id ?? null
+  );
+  const scheduleAccentColor = colors.primary;
+  const visibleSchedule = day.schedule.filter(isRenderableScheduleItem);
 
   return (
     <View className="mt-[34px]">
@@ -25,27 +79,23 @@ export function PilgrimageDaySchedule({ day, towns }: PilgrimageDayScheduleProps
         <Text
           className="text-[22px] font-bold"
           style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-          Harmonogram Dnia
+          Plan dnia
         </Text>
       </View>
 
-      <View className="relative">
-        {day.schedule.map((item, index) => (
-          <View key={item.id} className="relative">
-            {index > 0 && item.durationMin > 0 ? (
-              <PilgrimageScheduleBreakBadge
-                durationMin={item.durationMin}
-                timelineColor={timelineColor}
-              />
-            ) : null}
+      <View>
+        {visibleSchedule.map((item, index) => (
+          <View key={getScheduleItemRenderKey(item, index)} className="relative">
             <PilgrimageDayScheduleItem
-              day={day}
-              towns={towns}
               item={item}
-              currentLocationId={currentRouteLocation.location.id}
-              currentLocationSource={currentRouteLocation.source}
+              currentLocationId={currentVisibleLocationId}
+              currentLocationSource={currentRouteLocation?.source ?? 'time-estimated'}
             />
-            {index < day.schedule.length - 1 ? <View className="h-2" /> : null}
+            <PilgrimageScheduleSegmentBadge
+              distanceToNextKm={item.distanceToNextKm}
+              durationMin={item.durationMin}
+              accentColor={scheduleAccentColor}
+            />
           </View>
         ))}
       </View>

@@ -1,12 +1,18 @@
 import { Text, View } from 'react-native';
-import Footprints from 'lucide-react-native/dist/esm/icons/footprints.mjs';
-import MapPinned from 'lucide-react-native/dist/esm/icons/map-pinned.mjs';
-
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import type { PilgrimageDayScheduleItem as PilgrimageDayScheduleItemModel } from '../../../constants/pilgrimageRoute';
-import { formatDistanceKm } from '../../../utils/formatDistanceKm';
+import {PilgrimageRoutePositionBadge} from "./PilgrimageRoutePositionBadge";
+import {PilgrimageScheduleSegmentBadge} from "./PilgrimageScheduleSegmentBadge";
+import {formatDurationMinutes} from "../../../utils/formatters/formatDurationMinutes";
+import {Timer} from "lucide-react-native";
+import {PilgrimageTimeBadge} from "./PilgrimageTimeBadge";
 
-const { colors, radii, typography } = pilgrimageRouteTheme;
+
+const { colors, typography } = pilgrimageRouteTheme;
+const CARD_BORDER = colors.outlineVariant;
+const CARD_BACKGROUND = colors.surfaceContainerLowest;
+const ACTIVE_CARD_BACKGROUND = colors.primary;
+const ACTIVE_CARD_BORDER = colors.primary;
 
 type PilgrimageScheduleCardProps = {
   item: PilgrimageDayScheduleItemModel;
@@ -14,8 +20,8 @@ type PilgrimageScheduleCardProps = {
   isCurrentStop: boolean;
   isEdgeStop: boolean;
   accentColor: string;
+  isScheduleEstimated: boolean;
   accentBadgeTextColor: string;
-  currentStopBadgeLabel: string;
 };
 
 export function PilgrimageScheduleCard({
@@ -24,75 +30,56 @@ export function PilgrimageScheduleCard({
   isCurrentStop,
   isEdgeStop,
   accentColor,
+  isScheduleEstimated,
   accentBadgeTextColor,
-  currentStopBadgeLabel,
 }: PilgrimageScheduleCardProps) {
-  const badgeBackgroundColor = isCurrentStop ? '#ffffff' : '#F7E8EF';
-  const badgeTextColor = isCurrentStop ? '#56637A' : '#842160';
-  const cardStyle = isCurrentStop
-    ? {
-        backgroundColor: accentColor,
-        borderColor: accentColor,
-        borderRadius: 28,
-        shadowColor: accentColor,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
-      }
-    : {
-        backgroundColor: colors.surfaceContainerLowest,
-        borderColor: '#ececf0',
-        borderRadius: 28,
-        shadowColor: '#1c2433',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 10,
-      };
+  const cardStyle = {
+    borderRadius: 28,
+    shadowColor: colors.onSurface,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+  };
 
   return (
     <View
-      className="relative min-h-[160px] overflow-hidden border px-5 pb-5 pt-5"
-      style={cardStyle}>
-      <View className="flex-row items-start justify-between gap-3">
-      <Text
-        className="text-[20px] font-bold"
-        style={{
-          color: isCurrentStop ? accentBadgeTextColor : accentColor,
-          fontFamily: typography.fontFamily,
-        }}>
-        {item.time}
+      className="relative min-h-[108px] overflow-hidden rounded-[28px] border px-5 pb-5 pt-5"
+      style={[
+        {
+          backgroundColor: isCurrentStop ? ACTIVE_CARD_BACKGROUND : CARD_BACKGROUND,
+          borderColor: isCurrentStop ? ACTIVE_CARD_BORDER : CARD_BORDER,
+          borderWidth: 1,
+          elevation: 2,
+        },
+        cardStyle,
+      ]}>
+      <View className="flex-row items-center justify-between gap-3">
+        <Text
+          className="text-[20px] font-bold"
+          style={{
+            color: isCurrentStop ? colors.onPrimary : accentColor,
+            fontFamily: typography.fontFamily,
+          }}>
+          {item.time}
         </Text>
-        {item.distanceToNextKm > 0 ? (
-          <View
-            className="flex-row items-center rounded-full px-3 py-[6px]"
-            style={{
-              backgroundColor: badgeBackgroundColor,
-            }}>
-            <Footprints size={14} color={badgeTextColor} strokeWidth={2.1} />
-            <Text
-              className="ml-2 text-[12px] font-bold"
-              style={{
-                color: badgeTextColor,
-                fontFamily: typography.fontFamily,
-              }}>
-              {formatDistanceKm(item.distanceToNextKm)}
-            </Text>
-          </View>
-        ) : null}
+          <PilgrimageTimeBadge
+              durationMin={item.durationMin}
+              isCurrentStop={isCurrentStop}
+          />
       </View>
       <Text
-        className="mt-2 text-[17px] font-bold leading-[24px]"
+        className="mt-3 text-[19px] font-bold leading-[26px]"
         style={{
-          color: isCurrentStop ? accentBadgeTextColor : colors.onSurface,
+          color: isCurrentStop ? colors.onPrimary : colors.onSurface,
           fontFamily: typography.fontFamily,
         }}>
         {townName}
       </Text>
       {item.title ? (
         <Text
-          className="mt-2 text-[14px] leading-[21px]"
+          className="mt-1 text-[14px] leading-[21px]"
           style={{
-            color: isCurrentStop ? 'rgba(255,255,255,0.92)' : colors.onSurfaceVariant,
+            color: isCurrentStop ? colors.onPrimary : colors.onSurfaceVariant,
             fontFamily: typography.fontFamily,
           }}>
           {item.title}
@@ -102,21 +89,19 @@ export function PilgrimageScheduleCard({
         <Text
           className="mt-1 text-[13px] leading-[20px]"
           style={{
-            color: isCurrentStop ? 'rgba(255,255,255,0.92)' : colors.onSurfaceVariant,
+            color: isCurrentStop ? colors.onPrimary : colors.onSurfaceVariant,
             fontFamily: typography.fontFamily,
           }}>
           {item.description}
         </Text>
       ) : null}
+
       {isCurrentStop ? (
-        <View className="mt-4 flex-row items-center">
-          <Text
-            className="text-[14px] font-bold"
-            style={{ color: accentBadgeTextColor, fontFamily: typography.fontFamily }}>
-            {currentStopBadgeLabel}
-          </Text>
-          <MapPinned size={18} color={accentBadgeTextColor} strokeWidth={2.1} />
-        </View>
+        <Text
+          className="mt-3 text-[11px] font-bold uppercase tracking-[0.9px]"
+          style={{ color: colors.onPrimary, fontFamily: typography.fontFamily }}>
+          Aktualny punkt
+        </Text>
       ) : null}
     </View>
   );

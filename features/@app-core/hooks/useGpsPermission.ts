@@ -2,12 +2,23 @@ import { useEffect, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import * as Location from 'expo-location';
 
-export function useGpsPermission() {
+type UseGpsPermissionOptions = {
+  enabled?: boolean;
+};
+
+export function useGpsPermission({ enabled = true }: UseGpsPermissionOptions = {}) {
   const [isLoading, setIsLoading] = useState(true);
   const [isGranted, setIsGranted] = useState(false);
   const [isServicesEnabled, setIsServicesEnabled] = useState(false);
 
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      setIsGranted(false);
+      setIsServicesEnabled(false);
+      return;
+    }
+
     let isMounted = true;
     let appState = AppState.currentState;
     let pollInterval: ReturnType<typeof setInterval> | null = null;
@@ -77,7 +88,7 @@ export function useGpsPermission() {
         clearInterval(pollInterval);
       }
     };
-  }, []);
+  }, [enabled]);
 
   return { isLoading, isGranted, isServicesEnabled };
 }

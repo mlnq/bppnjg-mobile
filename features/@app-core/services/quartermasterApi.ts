@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { showToastOnce } from './appToast';
-import { getApiBaseUrl } from './backendConfig';
+import { fetchFromBackend } from './backendApi';
 
 export type QuartermasterComment = {
   id: string;
@@ -19,19 +19,10 @@ type QuartermasterResponse = {
 };
 
 async function fetchQuartermasterComments(): Promise<QuartermasterComment[]> {
-  const apiBaseUrl = getApiBaseUrl();
-
-  if (!apiBaseUrl) {
-    throw new Error('Brak skonfigurowanego adresu API backendu.');
-  }
-
-  const response = await fetch(`${apiBaseUrl}/api/quartermaster-comments`);
-
-  if (!response.ok) {
-    throw new Error(`Backend zwrócił błąd ${response.status} przy pobieraniu komentarza kwatermistrza.`);
-  }
-
-  const payload = (await response.json()) as QuartermasterResponse;
+  const payload = await fetchFromBackend<QuartermasterResponse>({
+    path: '/api/quartermaster-comments',
+    errorContext: 'pobieraniu komentarza kwatermistrza',
+  });
   return payload.items ?? [];
 }
 

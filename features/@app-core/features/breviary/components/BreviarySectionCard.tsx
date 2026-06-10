@@ -4,6 +4,7 @@ import Markdown from 'react-native-markdown-display';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import type { ReadingFontScale } from '../../../components/ReadingFontSizeControl';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import type { BreviarySectionVariant } from '../../../services/brewiarzApi';
 import { bodyToMarkdown } from '../helpers/pilgrimageBreviary.helpers';
 
@@ -25,6 +26,7 @@ export function BreviarySectionCard({
   fontScale,
   variants,
 }: BreviarySectionCardProps) {
+  const { cs, isCompact } = useCompactStyles();
   const [activeVariantId, setActiveVariantId] = useState(variants?.[0]?.id);
   const activeBody = variants?.find((variant) => variant.id === activeVariantId)?.body ?? body;
   const markdownBody = bodyToMarkdown(activeBody);
@@ -54,7 +56,7 @@ export function BreviarySectionCard({
                   backgroundColor: isActive ? BREVIARY_ACCENT_SOFT : colors.surfaceContainerLowest,
                 }}>
                 <Text
-                  className="text-[14px] font-semibold"
+                  className={cs('text-[13px] font-semibold', 'text-[14px] font-semibold')}
                   style={{
                     color: BREVIARY_ACCENT,
                     fontFamily: typography.fontFamily,
@@ -73,28 +75,28 @@ export function BreviarySectionCard({
             marginTop: variants?.length ? 12 : 16,
             color: colors.onSurface,
             fontFamily: typography.fontFamily,
-            fontSize: 16 * fontScale,
-            lineHeight: 30 * fontScale,
+            fontSize: (isCompact ? 15 : 16) * fontScale,
+            lineHeight: (isCompact ? 28 : 30) * fontScale,
           },
           paragraph: {
             marginTop: 0,
             marginBottom: 0,
             color: colors.onSurface,
             fontFamily: typography.fontFamily,
-            fontSize: 16 * fontScale,
-            lineHeight: 30 * fontScale,
+            fontSize: (isCompact ? 15 : 16) * fontScale,
+            lineHeight: (isCompact ? 28 : 30) * fontScale,
           },
           text: {
             color: colors.onSurface,
             fontFamily: typography.fontFamily,
-            fontSize: 16 * fontScale,
-            lineHeight: 30 * fontScale,
+            fontSize: (isCompact ? 15 : 16) * fontScale,
+            lineHeight: (isCompact ? 28 : 30) * fontScale,
           },
           strong: {
             color: BREVIARY_ACCENT,
             fontFamily: typography.fontFamily,
-            fontSize: 16 * fontScale,
-            lineHeight: 30 * fontScale,
+            fontSize: (isCompact ? 15 : 16) * fontScale,
+            lineHeight: (isCompact ? 28 : 30) * fontScale,
             fontWeight: '700',
           },
         }}>

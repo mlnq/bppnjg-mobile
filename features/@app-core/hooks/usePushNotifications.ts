@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { storePushNotificationAsNewsItem } from '../services/localNotificationNews';
 import { notificationsApi } from '../services/notificationsApi';
 import { pilgrimageApi } from '../services/pilgrimageApi';
+import { prefetchPilgrimageHomeData } from '../services/pilgrimageDataRefresh';
 import { resolvePushNotificationRoute } from '../services/pushNotificationNavigation';
 import { quartermasterApi } from '../services/quartermasterApi';
 import { registerExpoPushToken } from '../services/pushRegistrationApi';
@@ -60,11 +61,7 @@ export function usePushNotifications() {
 
     const refreshAppDataFromPush = () => {
       store.dispatch(pilgrimageApi.util.invalidateTags(['PilgrimageData']));
-      store.dispatch(
-        pilgrimageApi.util.prefetch('getPilgrimageBootstrap', undefined, {
-          force: true,
-        })
-      );
+      prefetchPilgrimageHomeData(true);
     };
 
     const persistNotification = async (notification: Parameters<

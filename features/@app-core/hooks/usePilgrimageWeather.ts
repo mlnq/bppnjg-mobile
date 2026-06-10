@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { pilgrimageDay, type PilgrimageWeather } from '../constants/pilgrimageRoute';
+import type { PilgrimageWeather } from '../constants/pilgrimageRoute';
+import {
+  PILGRIMAGE_YEAR,
+  useGetPilgrimageDayQuery,
+  useGetPilgrimageQuery,
+} from '../services/pilgrimageApi';
+import { getCurrentPilgrimageDayFetchNumber } from './useSelectedPilgrimageDay';
 import { useUserLocation } from './useUserLocation';
 import { getCurrentRouteLocation } from '../utils/pilgrimageCurrentLocation';
 
@@ -8,11 +14,13 @@ type OpenMeteoWeatherResponse = {
   current?: {
     temperature_2m?: number;
     weather_code?: number;
+    is_day?: number;
   };
   hourly?: {
     time?: string[];
     temperature_2m?: number[];
     weather_code?: number[];
+    is_day?: number[];
   };
 };
 
@@ -23,6 +31,7 @@ export type PilgrimageHourlyWeatherItem = {
   temperatureC: number;
   summary: string;
   icon: PilgrimageWeather['icon'];
+  isDay: boolean;
 };
 
 type UsePilgrimageWeatherResult = {
@@ -34,10 +43,19 @@ type UsePilgrimageWeatherResult = {
 };
 
 const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast';
+const DEFAULT_WEATHER: PilgrimageWeather = {
+  temperatureC: 0,
+  summary: 'Prognoza chwilowo niedostepna.',
+  icon: 'partlyCloudy',
+};
 
-function mapWeatherCodeToWeather(code: number | undefined, temperatureC: number): PilgrimageWeather {
+function mapWeatherCodeToWeather(
+  code: number | undefined,
+  temperatureC: number,
+  isDay = true
+): PilgrimageWeather {
   if (code === 0) {
-    return { temperatureC, summary: 'Słonecznie', icon: 'sunny' };
+    return { temperatureC, summary: isDay ? 'Słonecznie' : 'Bezchmurnie', icon: 'sunny' };
   }
 
   if (code === 1 || code === 2) {
@@ -105,13 +123,19 @@ function buildHourlyForecast(hourly: OpenMeteoWeatherResponse['hourly']) {
         return null;
       }
 
-      const mappedWeather = mapWeatherCodeToWeather(hourly.weather_code?.[index], Math.round(temperature));
+      const isDay = hourly.is_day?.[index] !== 0;
+      const mappedWeather = mapWeatherCodeToWeather(
+        hourly.weather_code?.[index],
+        Math.round(temperature),
+        isDay
+      );
 
       return {
         time,
         temperatureC: mappedWeather.temperatureC,
         summary: mappedWeather.summary,
         icon: mappedWeather.icon,
+        isDay,
       };
     })
     .filter((item): item is PilgrimageHourlyWeatherItem => item !== null)
@@ -119,15 +143,43 @@ function buildHourlyForecast(hourly: OpenMeteoWeatherResponse['hourly']) {
 }
 
 export function usePilgrimageWeather(): UsePilgrimageWeatherResult {
-  const { currentLocation } = useUserLocation();
-  const fallbackLocation = getCurrentRouteLocation(pilgrimageDay, currentLocation).location;
-  const latitude = currentLocation?.latitude ?? fallbackLocation.latitude;
-  const longitude = currentLocation?.longitude ?? fallbackLocation.longitude;
-  const source: WeatherSource = currentLocation ? 'gps' : 'time-estimated';
+  const { currentLocation, locationSource } = useUserLocation();
+  const {
+    data: pilgrimage,
+    isLoading: isPilgrimageLoading,
+    isFetching: isPilgrimageFetching,
+  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
+  const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
+  const {
+    data: pilgrimageDay,
+    isLoading: isDayLoading,
+    isFetching: isDayFetching,
+  } = useGetPilgrimageDayQuery(
+    {
+      year: PILGRIMAGE_YEAR,
+      dayNumber: currentDayFetchNumber ?? 1,
+    },
+    {
+      skip: currentDayFetchNumber === null,
+    }
+  );
+  const routeLocation = pilgrimageDay
+    ? getCurrentRouteLocation(pilgrimageDay, currentLocation, new Date(), locationSource)
+    : null;
+  const fallbackLocation = routeLocation?.location;
+  const latitude =
+    routeLocation?.source === 'gps' && currentLocation
+      ? currentLocation.latitude
+      : fallbackLocation?.latitude;
+  const longitude =
+    routeLocation?.source === 'gps' && currentLocation
+      ? currentLocation.longitude
+      : fallbackLocation?.longitude;
+  const source: WeatherSource = routeLocation?.source ?? 'fallback';
 
-  const [weather, setWeather] = useState<PilgrimageWeather>(pilgrimageDay.weather);
+  const [weather, setWeather] = useState<PilgrimageWeather>(pilgrimageDay?.weather ?? DEFAULT_WEATHER);
   const [hourlyForecast, setHourlyForecast] = useState<PilgrimageHourlyWeatherItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(Boolean(currentDayFetchNumber !== null));
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -135,6 +187,22 @@ export function usePilgrimageWeather(): UsePilgrimageWeatherResult {
     const controller = new AbortController();
 
     const loadWeather = async () => {
+      if (isPilgrimageLoading || isPilgrimageFetching || isDayLoading || isDayFetching) {
+        setIsLoading(true);
+        setError(null);
+        return;
+      }
+
+      if (!pilgrimageDay || typeof latitude !== 'number' || typeof longitude !== 'number') {
+        setWeather(pilgrimageDay?.weather ?? DEFAULT_WEATHER);
+        setHourlyForecast([]);
+        setIsLoading(false);
+        setError(
+          pilgrimageDay ? 'Brak wspolrzednych aktualnego etapu.' : 'Nie udalo sie pobrac aktualnego etapu z API.'
+        );
+        return;
+      }
+
       setIsLoading(true);
       setError(null);
 
@@ -142,8 +210,8 @@ export function usePilgrimageWeather(): UsePilgrimageWeatherResult {
         const params = new URLSearchParams({
           latitude: latitude.toFixed(6),
           longitude: longitude.toFixed(6),
-          current: 'temperature_2m,weather_code',
-          hourly: 'temperature_2m,weather_code',
+          current: 'temperature_2m,weather_code,is_day',
+          hourly: 'temperature_2m,weather_code,is_day',
           timezone: 'auto',
           forecast_days: '1',
         });
@@ -171,7 +239,8 @@ export function usePilgrimageWeather(): UsePilgrimageWeatherResult {
         setWeather(
           mapWeatherCodeToWeather(
             data.current.weather_code,
-            Math.round(data.current.temperature_2m)
+            Math.round(data.current.temperature_2m),
+            data.current.is_day !== 0
           )
         );
         setHourlyForecast(buildHourlyForecast(data.hourly));
@@ -198,7 +267,15 @@ export function usePilgrimageWeather(): UsePilgrimageWeatherResult {
       isMounted = false;
       controller.abort();
     };
-  }, [latitude, longitude]);
+  }, [
+    isDayFetching,
+    isDayLoading,
+    isPilgrimageFetching,
+    isPilgrimageLoading,
+    latitude,
+    longitude,
+    pilgrimageDay,
+  ]);
 
   return {
     weather,

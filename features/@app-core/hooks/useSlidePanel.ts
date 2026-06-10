@@ -40,9 +40,8 @@ export function useSlidePanel() {
           anim.setValue(1 + dx / SLIDE_WIDTH);
         }
       },
-      onPanResponderRelease: (_, { dx, velocityX }) => {
-        const shouldClose =
-          velocityX < -SWIPE_VELOCITY_THRESHOLD || dx < -SWIPE_DISTANCE_THRESHOLD;
+      onPanResponderRelease: (_, { dx, vx }) => {
+        const shouldClose = vx < -SWIPE_VELOCITY_THRESHOLD || dx < -SWIPE_DISTANCE_THRESHOLD;
 
         if (shouldClose) {
           close();

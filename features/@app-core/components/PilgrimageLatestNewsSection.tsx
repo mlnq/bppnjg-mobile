@@ -4,6 +4,7 @@ import { NewsIcon, pilgrimageRouteTheme } from '../../../packages/@app-ui';
 import { PilgrimageNewsCard } from '../features/news/components/PilgrimageNewsCard';
 import { useGetPilgrimageNotificationsQuery } from '../services/notificationsApi';
 import { AppLoader } from './AppLoader';
+import { CardButton } from './Card';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
@@ -19,17 +20,17 @@ export function PilgrimageLatestNewsSection({ onShowAll }: PilgrimageLatestNewsS
   };
 
   return (
-    <TouchableOpacity
+    <CardButton
       activeOpacity={0.9}
       onPress={handleOpenNews}
       className="mt-7 rounded-[26px] px-4 py-5"
-      style={{ backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e1e3e4' }}>
+      borderColor="#e1e3e4">
       <View className="mb-4 flex-row items-center justify-between">
         <View className="flex-1 flex-row items-center">
           <View
             className="mr-3 h-11 w-11 items-center justify-center rounded-[14px]"
-            style={{ backgroundColor: '#f3f4f5' }}>
-            <NewsIcon size={20} color={colors.primaryContainer} />
+            style={{ backgroundColor: colors.primaryContainer }}>
+            <NewsIcon size={20} color={colors.primary} />
           </View>
           <View className="flex-1">
             <Text
@@ -54,12 +55,12 @@ export function PilgrimageLatestNewsSection({ onShowAll }: PilgrimageLatestNewsS
           <TouchableOpacity activeOpacity={0.75} onPress={handleOpenNews}>
             <Text
               className="mt-3 text-[15px] font-semibold"
-              style={{ color: colors.primaryContainer, fontFamily: typography.fontFamily }}>
+              style={{ color: colors.primary, fontFamily: typography.fontFamily }}>
               Zobacz wszystkie informacje
             </Text>
           </TouchableOpacity>
         </View>
       ) : null}
-    </TouchableOpacity>
+    </CardButton>
   );
 }

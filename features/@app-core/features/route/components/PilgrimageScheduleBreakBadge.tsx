@@ -1,35 +1,35 @@
 import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
-import { formatDurationMinutes } from '../../../utils/formatDurationMinutes';
+import { formatDurationMinutes } from '../../../utils/formatters/formatDurationMinutes';
 
 const { colors, typography } = pilgrimageRouteTheme;
+const BREAK_TEXT_COLOR = colors.primary;
+const BREAK_TIMELINE_COLOR = colors.surfaceContainerHigh;
 
 type PilgrimageScheduleBreakBadgeProps = {
   durationMin: number;
-  timelineColor: string;
+  accentColor?: string;
 };
 
 export function PilgrimageScheduleBreakBadge({
   durationMin,
-  timelineColor,
+  accentColor = BREAK_TEXT_COLOR,
 }: PilgrimageScheduleBreakBadgeProps) {
   return (
     <View className="flex-row gap-[14px]">
-      <View className="w-[54px] items-center">
+      <View className="w-[40px] items-center">
         <View
           className="absolute inset-y-0 w-[3px]"
-          style={{ backgroundColor: timelineColor }}
+          style={{ backgroundColor: BREAK_TIMELINE_COLOR }}
         />
       </View>
       <View className="flex-1 items-center">
-        <View className="mb-5 mt-2 rounded-full px-4 py-2" style={{ backgroundColor: '#FFF1BF' }}>
-          <Text
-            className="text-[12px] font-bold uppercase"
-            style={{ color: '#C96B00', fontFamily: typography.fontFamily }}>
-            {`Przerwa ${formatDurationMinutes(durationMin)}`}
-          </Text>
-        </View>
+        <Text
+          className="mb-5 mt-2 text-[13px] font-extrabold uppercase tracking-[1px]"
+          style={{ color: accentColor, fontFamily: typography.fontFamily }}>
+          {`Przerwa ${formatDurationMinutes(durationMin)}`}
+        </Text>
       </View>
     </View>
   );

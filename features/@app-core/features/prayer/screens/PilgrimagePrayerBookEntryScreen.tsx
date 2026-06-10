@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import {
   getPrayerBookEntryById,
   loadPrayerBookEntryBody,
@@ -12,17 +13,14 @@ import {
 
 const { colors, typography } = pilgrimageRouteTheme;
 const PRAYER_BOOK_ACCENT = '#16A34A';
-const PRAYER_BOOK_ACCENT_SOFT = '#ECFDF3';
 const PRAYER_BOOK_ACCENT_BORDER = '#BBF7D0';
 
 type PilgrimagePrayerBookEntryScreenProps = {
   entryId: PrayerBookEntryId;
-  onBack: () => void;
 };
 
 export function PilgrimagePrayerBookEntryScreen({
   entryId,
-  onBack,
 }: PilgrimagePrayerBookEntryScreenProps) {
   const entry = getPrayerBookEntryById(entryId);
   const [body, setBody] = useState('');
@@ -69,41 +67,28 @@ export function PilgrimagePrayerBookEntryScreen({
 
   if (!entry) {
     return (
-      <ScrollView
+      <AppScreenScrollView
         className="flex-1"
         style={{ backgroundColor: colors.surface }}
-        contentContainerClassName="px-4 pt-6 pb-6"
+        contentContainerClassName="pt-6 pb-6"
         showsVerticalScrollIndicator={false}>
-        <TouchableOpacity activeOpacity={0.75} onPress={onBack}>
-          <Text
-            className="mb-5 text-[15px] font-semibold"
-            style={{ color: PRAYER_BOOK_ACCENT, fontFamily: typography.fontFamily }}>
-            Wróć do modlitewnika
-          </Text>
-        </TouchableOpacity>
+      
         <Text
           className="text-[16px] leading-7"
           style={{ color: '#9b3d3d', fontFamily: typography.fontFamily }}>
           Nie znaleziono wybranej modlitwy.
         </Text>
-      </ScrollView>
+      </AppScreenScrollView>
     );
   }
 
   return (
-    <ScrollView
+    <AppScreenScrollView
       className="flex-1"
       style={{ backgroundColor: colors.surface }}
-      contentContainerClassName="px-4 pt-6 pb-6"
+      contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
-      <TouchableOpacity activeOpacity={0.75} onPress={onBack}>
-        <Text
-          className="mb-5 text-[15px] font-semibold"
-          style={{ color: PRAYER_BOOK_ACCENT, fontFamily: typography.fontFamily }}>
-          Wróć do modlitewnika
-        </Text>
-      </TouchableOpacity>
-
+    
       <Text
         className="text-[28px] font-bold"
         style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
@@ -163,6 +148,6 @@ export function PilgrimagePrayerBookEntryScreen({
           </Markdown>
         )}
       </View>
-    </ScrollView>
+    </AppScreenScrollView>
   );
 }

@@ -371,10 +371,10 @@ function parseBreviaryOffice(
   );
 
   return {
-    date: decodeHtml(dateMatch?.[1] ?? ''),
-    liturgicalDay: liturgicalDayMatch ? decodeHtml(liturgicalDayMatch[1]) : undefined,
-    psalterWeek: psalterWeekMatch ? decodeHtml(psalterWeekMatch[1]) : undefined,
-    season: seasonMatch ? decodeHtml(seasonMatch[1]) : undefined,
+    date: decodeHtml(latin1ToLatin2(dateMatch?.[1] ?? '')),
+    liturgicalDay: liturgicalDayMatch ? decodeHtml(latin1ToLatin2(liturgicalDayMatch[1])) : undefined,
+    psalterWeek: psalterWeekMatch ? decodeHtml(latin1ToLatin2(psalterWeekMatch[1])) : undefined,
+    season: seasonMatch ? decodeHtml(latin1ToLatin2(seasonMatch[1])) : undefined,
     office,
     officeLabel: OFFICE_CONFIG[office].label,
     sourceUrl,

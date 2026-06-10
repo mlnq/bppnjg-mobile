@@ -1,10 +1,10 @@
-import { AppLayout } from '../components/AppLayout';
+import { AppShell } from '../components/AppShell';
 import { PilgrimageRouteScreen } from '../features/route/screens/PilgrimageRouteScreen';
 
 export function PilgrimageRouteRoute() {
   return (
-    <AppLayout activeTab="route" onTabChange={() => {}}>
+    <AppShell activeTab="route" onTabChange={() => {}}>
       <PilgrimageRouteScreen />
-    </AppLayout>
+    </AppShell>
   );
 }

@@ -1,8 +1,10 @@
 import type { BreviaryOfficeId } from '../../../services/brewiarzApi';
 
+export const DEFAULT_BREVIARY_OFFICE: BreviaryOfficeId = 'jutrznia';
+
 export const OFFICE_OPTIONS: readonly { id: BreviaryOfficeId; label: string }[] = [
   { id: 'godzina-czytan', label: 'Godz. czytan' },
-  { id: 'jutrznia', label: 'Jutrznia' },
+  { id: DEFAULT_BREVIARY_OFFICE, label: 'Jutrznia' },
   { id: 'modlitwa-przedpoludniowa', label: 'Przed poludniem' },
   { id: 'modlitwa-poludniowa', label: 'W poludnie' },
   { id: 'modlitwa-popoludniowa', label: 'Po poludniu' },

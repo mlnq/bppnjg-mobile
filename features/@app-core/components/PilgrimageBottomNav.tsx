@@ -3,13 +3,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   HomeIcon,
+  InfoNavIcon,
   PrayerIcon,
   RouteIcon,
   pilgrimageRouteTheme,
 } from '../../../packages/@app-ui';
 import { type AppTab } from '../routes/appTabs';
+import { useNotificationsBadge } from '../hooks/useNotificationsBadge';
+import { useGetPilgrimageNotificationsQuery } from '../services/notificationsApi';
 
 const { colors, typography } = pilgrimageRouteTheme;
+const INACTIVE_TAB_COLOR = colors.onSurfaceVariant;
+export const BOTTOM_NAV_HEIGHT = 82;
 
 type NavItem = {
   id: AppTab;
@@ -20,6 +25,7 @@ const items: readonly NavItem[] = [
   { id: 'home', label: 'Start' },
   { id: 'route', label: 'Trasa' },
   { id: 'prayer', label: 'Niezbędnik' },
+  { id: 'info', label: 'Info' },
 ];
 
 type PilgrimageBottomNavProps = {
@@ -28,28 +34,36 @@ type PilgrimageBottomNavProps = {
 };
 
 function renderNavIcon(itemId: AppTab, activeTab?: AppTab) {
+  const iconColor = itemId === activeTab ? colors.primary : INACTIVE_TAB_COLOR;
+
   if (itemId === 'home') {
-    return <HomeIcon active={itemId === activeTab} />;
+    return <HomeIcon size={24} color={iconColor} />;
   }
 
   if (itemId === 'route') {
-    return <RouteIcon active={itemId === activeTab} />;
+    return <RouteIcon color={iconColor} />;
   }
 
-  return <PrayerIcon active={itemId === activeTab} />;
+  if (itemId === 'info') {
+    return <InfoNavIcon size={24} color={iconColor} active={itemId === activeTab} />;
+  }
+
+  return <PrayerIcon size={24} color={iconColor} />;
 }
 
 export function PilgrimageBottomNav({ activeTab, onTabChange }: PilgrimageBottomNavProps) {
   const insets = useSafeAreaInsets();
+  const { data: notifications } = useGetPilgrimageNotificationsQuery();
+  const { hasUnreadNotifications } = useNotificationsBadge(notifications);
 
   return (
     <View
       className="absolute bottom-0 left-0 right-0 flex-row items-center justify-around rounded-t-[22px] border-t px-[10px] pt-2"
       style={{
-        minHeight: 82 + insets.bottom,
+        minHeight: BOTTOM_NAV_HEIGHT + insets.bottom,
         paddingBottom: Math.max(insets.bottom, 12),
         backgroundColor: colors.surfaceContainerLowest,
-        borderTopColor: '#efeaf1',
+        borderTopColor: colors.outlineVariant,
       }}>
       {items.map((item) => (
         <TouchableOpacity
@@ -57,11 +71,21 @@ export function PilgrimageBottomNav({ activeTab, onTabChange }: PilgrimageBottom
           activeOpacity={0.75}
           onPress={() => onTabChange(item.id)}
           className="h-14 min-w-[54px] items-center justify-center gap-1 rounded-[14px]">
-          {renderNavIcon(item.id, activeTab)}
+          <View className="relative">
+            {renderNavIcon(item.id, activeTab)}
+            {item.id === 'info' && hasUnreadNotifications ? (
+              <View
+                className="absolute -right-1 top-0 h-3 w-3 rounded-full"
+                style={{
+                  backgroundColor: '#d12f2f',
+                }}
+              />
+            ) : null}
+          </View>
           <Text
             className="text-[10px] font-bold"
             style={{
-              color: item.id === activeTab ? colors.primaryContainer : '#9ca0a7',
+              color: item.id === activeTab ? colors.primary : INACTIVE_TAB_COLOR,
               fontFamily: typography.fontFamily,
               letterSpacing: 0.8,
             }}>

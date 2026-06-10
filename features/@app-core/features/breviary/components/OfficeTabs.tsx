@@ -1,10 +1,11 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import type { BreviaryOfficeId } from '../../../services/brewiarzApi';
 import { OFFICE_OPTIONS } from '../helpers/pilgrimageBreviary.helpers';
 
-const { colors, typography } = pilgrimageRouteTheme;
+const { typography } = pilgrimageRouteTheme;
 const BREVIARY_ACCENT = '#2563EB';
 const BREVIARY_ACCENT_SOFT = '#EFF6FF';
 const BREVIARY_ACCENT_BORDER = '#BFDBFE';
@@ -15,6 +16,8 @@ type OfficeTabsProps = {
 };
 
 export function OfficeTabs({ value, onChange }: OfficeTabsProps) {
+  const { cs } = useCompactStyles();
+
   return (
     <View className="mt-5 flex-row flex-wrap gap-2">
       {OFFICE_OPTIONS.map((option) => {
@@ -31,7 +34,7 @@ export function OfficeTabs({ value, onChange }: OfficeTabsProps) {
               backgroundColor: isActive ? BREVIARY_ACCENT : BREVIARY_ACCENT_SOFT,
             }}>
             <Text
-              className="text-[14px] font-semibold"
+              className={cs('text-[13px] font-semibold', 'text-[14px] font-semibold')}
               style={{
                 color: isActive ? '#FFFFFF' : BREVIARY_ACCENT,
                 fontFamily: typography.fontFamily,

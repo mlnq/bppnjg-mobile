@@ -1,47 +1,39 @@
 import { ReactNode } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { CardButton } from '../../../components/Card';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
 type PrayerTileCardProps = {
   icon: ReactNode;
-  subtitle: string;
   title: string;
   onPress?: () => void;
 };
 
-export function PrayerTileCard({ icon, subtitle, title, onPress }: PrayerTileCardProps) {
+export function PrayerTileCard({ icon, title, onPress }: PrayerTileCardProps) {
+  const { cs } = useCompactStyles();
+
   return (
-    <TouchableOpacity
+    <CardButton
       disabled={!onPress}
       activeOpacity={0.8}
       onPress={onPress}
-      className="min-h-[258px] flex-1 items-center justify-center rounded-[26px] border px-5 py-6"
-      style={{
-        backgroundColor: '#ffffff',
-        borderColor: '#ececf0',
-        borderRadius: 26,
-        shadowColor: '#1c2433',
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 2,
-      }}>
-      <View className="mb-8 items-center justify-center">
+      className={cs(
+        'min-h-[120px] flex-1 items-center justify-center rounded-[24px] border px-4 py-5',
+        'min-h-[160px] flex-1 items-center justify-center rounded-[24px] border px-4 py-5'
+      )}
+      >
+      <View className={cs('mb-5 items-center justify-center', 'mb-6 items-center justify-center')}>
         {icon}
       </View>
       <Text
-        className="mb-2 text-center text-[23px] font-bold"
+        className={cs('text-center text-[16px] font-bold', 'text-center text-[18px] font-bold')}
         style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
         {title}
       </Text>
-      <Text
-        className="text-center text-[15px] leading-7"
-        style={{ color: '#586577', fontFamily: typography.fontFamily, maxWidth: 170 }}>
-        {subtitle}
-      </Text>
-    </TouchableOpacity>
+    </CardButton>
   );
 }

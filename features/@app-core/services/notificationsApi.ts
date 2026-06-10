@@ -1,12 +1,16 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import type { PilgrimageNewsItem, PilgrimagePushType } from '../constants/pilgrimageRoute';
+import type { PilgrimageNewsItem } from '../constants/pilgrimageRoute';
 import { showToastOnce } from './appToast';
-import { getApiBaseUrl } from './backendConfig';
+import { fetchFromBackend } from './backendApi';
 import {
   mergeNotificationNewsItems,
   readStoredNotificationNewsItems,
 } from './localNotificationNews';
+import {
+  mapNotificationNewsCategory,
+  mapNotificationPushType,
+} from './notificationNewsMapping';
 
 type BackendNewsItem = {
   id: string;
@@ -22,58 +26,20 @@ type BackendNewsResponse = {
   items?: BackendNewsItem[];
 };
 
-function mapNewsCategory(category: string): PilgrimageNewsItem['category'] {
-  if (category === 'logistics' || category === 'quartermaster' || category === 'medical') {
-    return 'logistics';
-  }
-
-  if (category === 'spiritual') {
-    return 'spiritual';
-  }
-
-  return 'announcement';
-}
-
-function mapPushType(category: string): PilgrimagePushType | undefined {
-  if (
-    category === 'announcement' ||
-    category === 'logistics' ||
-    category === 'spiritual' ||
-    category === 'weather' ||
-    category === 'medical' ||
-    category === 'general' ||
-    category === 'quartermaster' ||
-    category === 'test'
-  ) {
-    return category;
-  }
-
-  return undefined;
-}
-
 async function fetchRemoteNews(): Promise<PilgrimageNewsItem[]> {
-  const apiBaseUrl = getApiBaseUrl();
-
-  if (!apiBaseUrl) {
-    throw new Error('Brak skonfigurowanego adresu API backendu.');
-  }
-
-  const response = await fetch(`${apiBaseUrl}/api/news?limit=50&page=1`);
-
-  if (!response.ok) {
-    throw new Error(`Backend zwrócił błąd ${response.status} przy pobieraniu newsów.`);
-  }
-
-  const payload = (await response.json()) as BackendNewsResponse;
+  const payload = await fetchFromBackend<BackendNewsResponse>({
+    path: '/api/news?limit=50&page=1',
+    errorContext: 'pobieraniu newsów',
+  });
 
   return (payload.items ?? []).map((item) => ({
     id: item.id,
     title: item.title,
     summary: item.summary || item.content || '',
     publishedAt: item.publishedAt,
-    category: mapNewsCategory(item.category),
+    category: mapNotificationNewsCategory(item.category),
     isPinned: item.isPinned || undefined,
-    pushType: mapPushType(item.category),
+    pushType: mapNotificationPushType(item.category),
   }));
 }
 

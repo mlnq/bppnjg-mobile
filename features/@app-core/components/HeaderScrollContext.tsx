@@ -5,7 +5,7 @@ export const APP_HEADER_HEIGHT = 72;
 
 type HeaderScrollContextValue = {
   scrollY: Animated.Value;
-  headerTranslateY: Animated.AnimatedInterpolation;
+  headerTranslateY: Animated.AnimatedInterpolation<number>;
 };
 
 const HeaderScrollContext = createContext<HeaderScrollContextValue | null>(null);

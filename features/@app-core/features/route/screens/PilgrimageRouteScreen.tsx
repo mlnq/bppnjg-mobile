@@ -1,62 +1,89 @@
-import { Modal, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
-import { pilgrimage, pilgrimageDay, towns } from '../../../constants/pilgrimageRoute';
-import { useRouteFallbackMode } from '../../../hooks/useRouteFallbackMode';
+import { PilgrimageRouteLocationInfoModal } from '../../../components/PilgrimageRouteLocationInfoModal';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
+import { SCREEN_HORIZONTAL_PADDING_CLASS } from '../../../constants/layout';
+import { useCurrentTime } from '../../../hooks/useCurrentTime';
+import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
+import { useSelectedPilgrimageDay } from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
-import { useGetPilgrimageBootstrapQuery } from '../../../services/pilgrimageApi';
 import {
-  getCurrentRouteLocation,
-} from '../../../utils/pilgrimageCurrentLocation';
+  PILGRIMAGE_YEAR,
+  useGetPilgrimageDayQuery,
+  useGetPilgrimageQuery,
+} from '../../../services/pilgrimageApi';
 import { PilgrimageDaySchedule } from '../components/PilgrimageDaySchedule';
 import { PilgrimageRouteHeroCard } from '../components/PilgrimageRouteHeroCard';
-import { getScheduleSourceLabel } from '../helpers/pilgrimageRouteStatus.helpers';
+import { PilgrimageRoutePositionBadge } from '../components/PilgrimageRoutePositionBadge';
+import { getRouteLocationMeta } from '../helpers/pilgrimageRouteLocationMeta';
 
 const { colors, typography } = pilgrimageRouteTheme;
+const ROUTE_CHIP_BACKGROUND = colors.surfaceContainerLowest;
+const ROUTE_CHIP_BORDER = colors.primaryContainer;
+const ROUTE_CHIP_TEXT = colors.primary;
 
 export function PilgrimageRouteScreen() {
-  const { currentLocation } = useUserLocation();
-  const routeFallbackMode = useRouteFallbackMode();
-  const { data, isLoading, isFetching, isError, refetch } = useGetPilgrimageBootstrapQuery();
+  const { currentLocation, locationSource } = useUserLocation();
+  const now = useCurrentTime();
+  const {
+    data: pilgrimage,
+    isLoading: isPilgrimageLoading,
+    isFetching: isPilgrimageFetching,
+    isError: isPilgrimageError,
+  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
-  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
-  const handleRefresh = async () => {
-    setIsManualRefreshing(true);
-
-    try {
-      await refetch();
-    } finally {
-      setIsManualRefreshing(false);
+  const { currentDayFetchNumber, effectiveDayNumber, setSelectedDayNumber, resetToCurrentDay } =
+    useSelectedPilgrimageDay(
+      pilgrimage
+        ? {
+            totalDays: pilgrimage.totalDays,
+          }
+        : null
+    );
+  const activeDayNumber = effectiveDayNumber ?? currentDayFetchNumber;
+  const {
+    data: activeDay,
+    isLoading: isDayLoading,
+    isFetching: isDayFetching,
+    isError: isDayError,
+    refetch: refetchActiveDay,
+  } = useGetPilgrimageDayQuery(
+    {
+      year: PILGRIMAGE_YEAR,
+      dayNumber: activeDayNumber ?? 1,
+    },
+    {
+      skip: activeDayNumber === null,
     }
-  };
-  const fallbackData =
-    routeFallbackMode.isEnabled && routeFallbackMode.isHydrated
-      ? {
-          pilgrimage,
-          pilgrimageDay,
-          towns,
-          news: [...pilgrimageDay.news],
-          source: 'bundled-fallback' as const,
-        }
-      : null;
-  const activeData = data ?? fallbackData;
+  );
+  const { isRefreshing: isManualRefreshing, refresh: handleRefresh } = usePilgrimageRefresh({
+    additionalRefreshTasks: activeDayNumber !== null ? [() => refetchActiveDay()] : [],
+  });
 
-  if (!activeData && (isLoading || isFetching)) {
+  if (
+    (!pilgrimage || !activeDay) &&
+    (isPilgrimageLoading ||
+      isPilgrimageFetching ||
+      (activeDayNumber !== null && (isDayLoading || isDayFetching)))
+  ) {
     return (
-      <View className="flex-1 px-4" style={{ backgroundColor: colors.surface }}>
+      <View
+        className={`flex-1 ${SCREEN_HORIZONTAL_PADDING_CLASS}`}
+        style={{ backgroundColor: colors.surface }}>
         <AppLoader label="Pobieranie danych etapu z backendu..." minHeight={320} />
       </View>
     );
   }
 
-  if (!activeData) {
+  if (!pilgrimage || !activeDay) {
     return (
-      <ScrollView
+      <AppScreenScrollView
         className="flex-1"
         style={{ backgroundColor: colors.surface }}
-        contentContainerClassName="px-4 pt-8 pb-6"
+        contentContainerClassName="pt-8 pb-6"
         refreshControl={
           <RefreshControl
             refreshing={isManualRefreshing}
@@ -68,34 +95,37 @@ export function PilgrimageRouteScreen() {
         }>
         <Text
           className="text-[16px] leading-7"
-          style={{ color: '#9b3d3d', fontFamily: typography.fontFamily }}>
+          style={{ color: colors.primary, fontFamily: typography.fontFamily }}>
           Nie udało się pobrać harmonogramu dnia z backendu.
         </Text>
-      </ScrollView>
+      </AppScreenScrollView>
     );
   }
 
-  const currentRouteLocation = getCurrentRouteLocation(
-    activeData.pilgrimageDay,
+  const isCurrentDay =
+    currentDayFetchNumber !== null && activeDay.dayNumber === currentDayFetchNumber;
+  const canShowPreviousDay = activeDay.dayNumber > 1;
+  const canShowNextDay = activeDay.dayNumber < pilgrimage.totalDays;
+
+  const {
+    currentRouteLocation,
+    scheduleSourceLabel,
+    isScheduleEstimated,
+    isForcedTimeMode,
+    modalDescription,
+  } = getRouteLocationMeta({
+    day: activeDay,
     currentLocation,
-    activeData.towns
-  );
-  const scheduleSourceLabel = getScheduleSourceLabel(currentRouteLocation.source);
-  const isScheduleEstimated = currentRouteLocation.source === 'time-estimated';
-  const accentColor = isScheduleEstimated ? colors.secondary : colors.primary;
-  const modalDescription =
-    currentRouteLocation.source === 'gps'
-      ? 'Telefon pokazuje Twoją pozycję na trasie, więc dystans i aktualny punkt wyznaczamy na podstawie GPS.'
-      : currentRouteLocation.fallbackReason === 'outside-route'
-        ? 'Jesteś teraz poza trasą, więc pokazujemy pozycję i kilometry zgodnie z planem dnia.'
-        : 'Telefon nie pokazuje teraz pozycji na trasie, więc pokazujemy pozycję i kilometry zgodnie z planem dnia.';
+    locationSource,
+    now,
+  });
 
   return (
     <>
-      <ScrollView
+      <AppScreenScrollView
         className="flex-1"
         style={{ backgroundColor: colors.surface }}
-        contentContainerClassName="px-4 pt-2 pb-6"
+        contentContainerClassName="pt-2 pb-6"
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -103,73 +133,86 @@ export function PilgrimageRouteScreen() {
             onRefresh={() => {
               void handleRefresh();
             }}
-            tintColor={accentColor}
+            tintColor={colors.primary}
           />
         }>
+        {isCurrentDay ? (
+          <PilgrimageRoutePositionBadge
+            label={
+              currentRouteLocation.source === 'gps' ? 'Lokalizacja wg GPS' : 'Według harmonogramu'
+            }
+            onPress={() => {
+              setIsInfoModalVisible(true);
+            }}
+          />
+        ) : null}
+        {isCurrentDay && isScheduleEstimated ? (
+          <View
+            className="mt-3 self-start rounded-full border px-4 py-3"
+            style={{ backgroundColor: ROUTE_CHIP_BACKGROUND, borderColor: ROUTE_CHIP_BORDER }}>
+            <Text
+              className="text-[12px] font-bold uppercase tracking-[0.8px]"
+              style={{ color: ROUTE_CHIP_TEXT, fontFamily: typography.fontFamily }}>
+              {isForcedTimeMode
+                ? 'Tryb godzinowy włączony. Pokazujemy pozycję według harmonogramu.'
+                : 'GPS wyłączony. Pokazujemy pozycję według harmonogramu.'}
+            </Text>
+          </View>
+        ) : null}
+        {!isCurrentDay ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              resetToCurrentDay();
+            }}
+            className="mt-3 self-start rounded-full border px-4 py-3"
+            style={{ backgroundColor: ROUTE_CHIP_BACKGROUND, borderColor: ROUTE_CHIP_BORDER }}>
+            <Text
+              className="text-[12px] font-bold uppercase tracking-[0.8px]"
+              style={{ color: ROUTE_CHIP_TEXT, fontFamily: typography.fontFamily }}>
+              Powrót do bieżącego dnia
+            </Text>
+          </TouchableOpacity>
+        ) : null}
         <PilgrimageRouteHeroCard
-          day={activeData.pilgrimageDay}
-          towns={activeData.towns}
-          totalDays={activeData.pilgrimage.totalDays}
-          accentSource={currentRouteLocation.source}
-          positionLabel={currentRouteLocation.source === 'gps' ? 'GPS' : 'plan'}
+          day={activeDay}
+          totalDays={pilgrimage.totalDays}
+          now={now}
           onOpenInfo={() => {
             setIsInfoModalVisible(true);
           }}
+          isCurrentDay={isCurrentDay}
+          canShowPreviousDay={canShowPreviousDay}
+          canShowNextDay={canShowNextDay}
+          onShowPreviousDay={() => {
+            if (canShowPreviousDay) {
+              setSelectedDayNumber(activeDay.dayNumber - 1);
+            }
+          }}
+          onShowNextDay={() => {
+            if (canShowNextDay) {
+              setSelectedDayNumber(activeDay.dayNumber + 1);
+            }
+          }}
         />
-        {isError ? (
+        {isPilgrimageError || isDayError ? (
           <Text
             className="mt-4 text-[12px] font-medium uppercase tracking-[0.8px]"
             style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
             Wyświetlane są ostatnio zapisane dane.
           </Text>
         ) : null}
-        <PilgrimageDaySchedule day={activeData.pilgrimageDay} towns={activeData.towns} />
-      </ScrollView>
+        <PilgrimageDaySchedule day={activeDay} isCurrentDay={isCurrentDay} now={now} />
+      </AppScreenScrollView>
 
-      <Modal
+      <PilgrimageRouteLocationInfoModal
         visible={isInfoModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => {
+        modalDescription={modalDescription}
+        scheduleSourceLabel={scheduleSourceLabel}
+        onClose={() => {
           setIsInfoModalVisible(false);
-        }}>
-        <View
-          className="flex-1 justify-end px-4 pb-6 pt-12"
-          style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
-          <View
-            className="rounded-[24px] px-5 py-5"
-            style={{ backgroundColor: colors.surfaceContainerLowest }}>
-            <Text
-              className="text-[16px] font-bold"
-              style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-              Jak wyznaczamy pozycję na trasie
-            </Text>
-            <Text
-              className="mt-3 text-[15px] leading-7"
-              style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
-              {modalDescription}
-            </Text>
-            <Text
-              className="mt-3 text-[12px] font-medium uppercase tracking-[0.8px]"
-              style={{ color: accentColor, fontFamily: typography.fontFamily }}>
-              Aktualnie: {scheduleSourceLabel}
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                setIsInfoModalVisible(false);
-              }}
-              className="mt-5 self-end rounded-full px-4 py-2"
-              style={{ backgroundColor: isScheduleEstimated ? '#fff4d6' : '#f9edf4' }}>
-              <Text
-                className="text-[12px] font-bold uppercase tracking-[0.8px]"
-                style={{ color: accentColor, fontFamily: typography.fontFamily }}>
-                Zamknij
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        }}
+      />
     </>
   );
 }

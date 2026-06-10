@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import { PilgrimagePrayerScreen } from '../../../features/@app-core/features/prayer/screens/PilgrimagePrayerScreen';
 
@@ -19,10 +19,13 @@ export default function PrayerRoute() {
   }, [router]);
 
   return (
-    <PilgrimagePrayerScreen
-      onNavigateToBreviary={handleNavigateToBreviary}
-      onNavigateToReadings={handleNavigateToReadings}
-      onNavigateToPrayerBook={handleNavigateToPrayerBook}
-    />
+    <>
+      <Stack.Screen options={{ title: 'Niezbędnik' }} />
+      <PilgrimagePrayerScreen
+        onNavigateToBreviary={handleNavigateToBreviary}
+        onNavigateToReadings={handleNavigateToReadings}
+        onNavigateToPrayerBook={handleNavigateToPrayerBook}
+      />
+    </>
   );
 }

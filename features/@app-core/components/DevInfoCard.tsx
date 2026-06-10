@@ -1,29 +1,22 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import Constants from 'expo-constants';
+import { useDispatch } from 'react-redux';
 
 import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
+import { getCurrentPilgrimageDayFetchNumber } from '../hooks/useSelectedPilgrimageDay';
 import { usePushDebugInfo } from '../hooks/usePushDebugInfo';
 import { useRouteFallbackMode } from '../hooks/useRouteFallbackMode';
-import { useGetPilgrimageBootstrapQuery } from '../services/pilgrimageApi';
+import {
+  PILGRIMAGE_YEAR,
+  useGetPilgrimageDayQuery,
+  useGetPilgrimageQuery,
+} from '../services/pilgrimageApi';
 import { getApiBaseUrl } from '../services/backendConfig';
-import { toggleRouteFallbackMode } from '../services/routeFallbackMode';
+import type { AppDispatch } from '../store/store';
+import { toggleRouteFallbackMode } from '../store/preferencesSlice';
+import { formatDateTimeWithSeconds } from '../utils/formatters/formatDateTime';
 
 const { colors, typography } = pilgrimageRouteTheme;
-
-function formatDateTime(value: string | null) {
-  if (!value) {
-    return 'Brak';
-  }
-
-  return new Intl.DateTimeFormat('pl-PL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  }).format(new Date(value));
-}
 
 function formatDataSourceLabel(value: 'remote' | 'bundled-fallback' | undefined) {
   if (value === 'remote') {
@@ -42,14 +35,26 @@ type DevInfoCardProps = {
 };
 
 export function DevInfoCard({ onReset }: DevInfoCardProps) {
+  const dispatch = useDispatch<AppDispatch>();
   const debugInfo = usePushDebugInfo();
   const routeFallbackMode = useRouteFallbackMode();
-  const { data } = useGetPilgrimageBootstrapQuery();
+  const { data: pilgrimage } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
+  const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
+  const { data: pilgrimageDay } = useGetPilgrimageDayQuery(
+    {
+      year: PILGRIMAGE_YEAR,
+      dayNumber: currentDayFetchNumber ?? 1,
+    },
+    {
+      skip: currentDayFetchNumber === null,
+    }
+  );
   const appVariant = Constants.expoConfig?.extra?.appVariant ?? 'production';
   const appId = Constants.expoConfig?.extra?.appId ?? 'Brak';
   const apiBaseUrl = getApiBaseUrl() ?? 'Brak';
   const routeDataSource =
-    data?.source ?? (routeFallbackMode.isEnabled && routeFallbackMode.isHydrated ? 'bundled-fallback' : undefined);
+    (pilgrimageDay ? 'remote' : undefined) ??
+    (routeFallbackMode.isEnabled && routeFallbackMode.isHydrated ? 'bundled-fallback' : undefined);
 
   return (
     <View
@@ -146,7 +151,7 @@ export function DevInfoCard({ onReset }: DevInfoCardProps) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
-              void toggleRouteFallbackMode();
+              dispatch(toggleRouteFallbackMode());
             }}
             className="mt-3 self-start rounded-full px-4 py-2"
             style={{ backgroundColor: '#f3e3d1' }}>
@@ -225,7 +230,7 @@ export function DevInfoCard({ onReset }: DevInfoCardProps) {
           <Text
             className="mt-1 text-[15px]"
             style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
-            {formatDateTime(debugInfo.updatedAt)}
+            {formatDateTimeWithSeconds(debugInfo.updatedAt)}
           </Text>
         </View>
       </View>

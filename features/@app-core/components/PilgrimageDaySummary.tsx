@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import type { PilgrimageDay, Town } from '../constants/pilgrimageRoute';
-import { getTownById } from '../constants/pilgrimageRoute';
+import type { PilgrimageDay } from '../constants/pilgrimageRoute';
+import { useCurrentTime } from '../hooks/useCurrentTime';
 import { useUserLocation } from '../hooks/useUserLocation';
 import {
   getCurrentRouteLocation,
@@ -14,37 +14,43 @@ const { colors, radii, typography } = pilgrimageRouteTheme;
 
 type PilgrimageDaySummaryProps = {
   day: PilgrimageDay;
-  towns: readonly Town[];
   totalDays: number;
   accentSource?: 'time-estimated' | 'gps';
 };
 
 export function PilgrimageDaySummary({
   day,
-  towns,
   totalDays,
   accentSource = 'gps',
 }: PilgrimageDaySummaryProps) {
-  const { currentLocation } = useUserLocation();
+  const { currentLocation, locationSource } = useUserLocation();
+  const now = useCurrentTime();
   const remainingDistanceKm = getRemainingDistanceFromCurrentLocation({
     day,
-    towns,
     currentLocation,
+    now,
+    locationSource,
   });
-  const currentRouteLocation = getCurrentRouteLocation(day, currentLocation, towns);
+  const currentRouteLocation = getCurrentRouteLocation(day, currentLocation, now, locationSource);
   const progressPercent = Math.max(
     0,
     Math.min(
       100,
-      Math.round(((day.route.totalDistanceKm - remainingDistanceKm) / Math.max(day.route.totalDistanceKm, 1)) * 100)
+      Math.round(
+        ((day.route.totalDistanceKm - remainingDistanceKm) /
+          Math.max(day.route.totalDistanceKm, 1)) *
+          100
+      )
     )
   );
-  const startTown = getTownById(day.route.startTownId, towns);
-  const endTown = getTownById(day.route.endTownId, towns);
+  const startStop = day.schedule[0];
+  const endStop = day.schedule[day.schedule.length - 1];
   const isScheduleEstimated = accentSource === 'time-estimated';
   const accentColor = isScheduleEstimated ? colors.secondary : colors.primary;
-  const accentBorderColor = isScheduleEstimated ? '#f1d98b' : '#eac3d3';
-  const progressColor = isScheduleEstimated ? colors.secondaryContainer : '#f0a500';
+  const accentBorderColor = isScheduleEstimated
+    ? colors.secondaryContainer
+    : colors.primaryContainer;
+  const progressColor = accentColor;
 
   return (
     <View className="mt-6">
@@ -56,8 +62,8 @@ export function PilgrimageDaySummary({
       <Text
         className="mb-[18px] text-[28px] font-bold leading-10"
         style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-        {startTown?.name ?? 'Brak startu'} →{'\n'}
-        {endTown?.name ?? 'Brak celu dnia'}
+        {startStop?.townName ?? startStop?.name ?? 'Brak startu'} →{'\n'}
+        {endStop?.townName ?? endStop?.name ?? 'Brak celu dnia'}
       </Text>
 
       <View
@@ -101,7 +107,7 @@ export function PilgrimageDaySummary({
 
         <View
           className="h-[10px] overflow-hidden rounded-full"
-          style={{ backgroundColor: '#e4e6e8', borderRadius: radii.full }}>
+          style={{ backgroundColor: colors.surfaceContainerHigh, borderRadius: radii.full }}>
           <View
             className="h-full rounded-full"
             style={{

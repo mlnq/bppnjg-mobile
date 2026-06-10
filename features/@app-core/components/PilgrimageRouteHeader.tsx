@@ -1,80 +1,68 @@
+import type { ReactNode } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import ChevronLeft from 'lucide-react-native/dist/esm/icons/chevron-left.mjs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BellIcon, pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { useNotificationsBadge } from '../hooks/useNotificationsBadge';
-import { type AppTab } from '../routes/appTabs';
-import { notificationsApi, useGetPilgrimageNotificationsQuery } from '../services/notificationsApi';
-import { store } from '../store/store';
+import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
 
 const { colors, typography } = pilgrimageRouteTheme;
+const HEADER_CONTENT_HEIGHT = 72;
+const HEADER_ACTION_SIZE = 44;
 
 type PilgrimageRouteHeaderProps = {
-  activeTab: AppTab;
-  onOpenNews: () => void;
+  title: string;
+  canGoBack: boolean;
+  onBackPress: () => void;
+  rightAction?: ReactNode;
 };
 
-const SECTION_TITLES: Record<AppTab, string> = {
-  home: 'Start',
-  route: 'Trasa',
-  prayer: 'Niezbędnik',
-};
-
-export function PilgrimageRouteHeader({ activeTab, onOpenNews }: PilgrimageRouteHeaderProps) {
-  const router = useRouter();
-  const { data: notifications } = useGetPilgrimageNotificationsQuery();
-  const { hasUnreadNotifications } = useNotificationsBadge(notifications);
-
-  const handleOpenNews = () => {
-    store.dispatch(
-      notificationsApi.util.prefetch('getPilgrimageNotifications', undefined, {
-        force: false,
-      })
-    );
-    onOpenNews();
-  };
+export function PilgrimageRouteHeader({
+  title,
+  canGoBack,
+  onBackPress,
+  rightAction,
+}: PilgrimageRouteHeaderProps) {
+  const insets = useSafeAreaInsets();
+  const actionTop = insets.top + (HEADER_CONTENT_HEIGHT - HEADER_ACTION_SIZE) / 2;
 
   return (
     <View
-      className="relative flex-row items-center justify-center border-b px-5"
-      style={[
-        {
-          height: 72,
-          backgroundColor: colors.surfaceContainerLowest,
-          borderBottomColor: colors.surfaceContainer,
-        },
-      ]}>
-      <View className="flex-row items-center gap-2">
-        <Text
-          className="text-[24px] font-bold"
-          style={{ color: colors.primary, fontFamily: typography.fontFamily }}>
-          {SECTION_TITLES[activeTab]}
-        </Text>
+      className="relative border-b px-5"
+      style={{
+        height: HEADER_CONTENT_HEIGHT + insets.top,
+        paddingTop: insets.top,
+        backgroundColor: '#fcfaf7',
+        borderBottomColor: '#e7ded4',
+      }}>
+      <View className="flex-1 flex-row items-center justify-center">
+        <View className="flex-row items-center gap-2">
+          <Text
+            className="text-[24px] font-bold"
+            style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+            {title}
+          </Text>
+        </View>
       </View>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPressIn={() => {
-          store.dispatch(
-            notificationsApi.util.prefetch('getPilgrimageNotifications', undefined, {
-              force: false,
-            })
-          );
-        }}
-        onPress={handleOpenNews}
-        className="absolute right-5 h-11 w-11 items-center justify-center rounded-full">
-        <BellIcon size={22} color={colors.onSurface} />
-        {hasUnreadNotifications ? (
-          <View
-            className="absolute right-[7px] top-[7px] h-3 w-3 rounded-full"
-            style={{
-              backgroundColor: '#d12f2f',
-              borderWidth: 2,
-              borderColor: colors.surfaceContainerLowest,
-            }}
-          />
-        ) : null}
-      </TouchableOpacity>
+      {canGoBack ? (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onBackPress}
+          className="absolute left-5 h-11 w-11 items-center justify-center rounded-full border"
+          style={{
+            top: actionTop,
+            backgroundColor: '#ffffff',
+            borderColor: '#e7ded4',
+          }}>
+          <ChevronLeft size={22} color={colors.onSurface} strokeWidth={2.2} />
+        </TouchableOpacity>
+      ) : null}
+
+      {rightAction ? (
+        <View className="absolute right-4" style={{ top: actionTop }}>
+          {rightAction}
+        </View>
+      ) : null}
     </View>
   );
 }

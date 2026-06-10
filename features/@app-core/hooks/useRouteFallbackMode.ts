@@ -1,10 +1,12 @@
-import { useSyncExternalStore } from 'react';
+import { useSelector } from 'react-redux';
 
-import {
-  getRouteFallbackModeSnapshot,
-  subscribeRouteFallbackMode,
-} from '../services/routeFallbackMode';
+import type { RootState } from '../store/store';
 
 export function useRouteFallbackMode() {
-  return useSyncExternalStore(subscribeRouteFallbackMode, getRouteFallbackModeSnapshot);
+  const isEnabled = useSelector((state: RootState) => state.preferences.isRouteFallbackModeEnabled);
+
+  return {
+    isEnabled,
+    isHydrated: true,
+  };
 }

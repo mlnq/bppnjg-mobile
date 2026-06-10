@@ -1,4 +1,5 @@
 import type { PilgrimageDayScheduleItem } from '../../../constants/pilgrimageRoute';
+import type { LocationSource } from '../../../store/preferencesSlice';
 
 export const formatRoutePreviewDistance = (value: number | undefined) =>
   typeof value === 'number' ? `${value.toFixed(1)} km` : 'brak danych';
@@ -11,8 +12,9 @@ export const getRoutePreviewWalkedDistanceKm = (
 export const getRoutePreviewHasGpsSignal = (
   isServicesEnabled: boolean,
   hasPermission: boolean,
-  currentLocation: unknown
-) => isServicesEnabled && hasPermission && Boolean(currentLocation);
+  currentLocation: unknown,
+  locationSource: LocationSource
+) => locationSource !== 'time-only' && isServicesEnabled && hasPermission && Boolean(currentLocation);
 
 export const getRoutePreviewNextStopTitle = (
   stops: readonly PilgrimageDayScheduleItem[],

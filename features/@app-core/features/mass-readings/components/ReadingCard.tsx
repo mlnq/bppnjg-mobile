@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import type { ReadingFontScale } from '../../../components/ReadingFontSizeControl';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import type { NiedzielaReading } from '../../../services/niedzielaApi';
 
 const { colors, typography } = pilgrimageRouteTheme;
@@ -15,6 +16,8 @@ type ReadingCardProps = {
 };
 
 export function ReadingCard({ reading, fontScale }: ReadingCardProps) {
+  const { cs, isCompact } = useCompactStyles();
+
   return (
     <View
       className="rounded-[24px] border bg-white px-5 py-5"
@@ -29,17 +32,17 @@ export function ReadingCard({ reading, fontScale }: ReadingCardProps) {
         style={{
           color: colors.onSurface,
           fontFamily: typography.fontFamily,
-          fontSize: 19 * fontScale,
-          lineHeight: 24 * fontScale,
+          fontSize: (isCompact ? 18 : 19) * fontScale,
+          lineHeight: (isCompact ? 23 : 24) * fontScale,
         }}>
         {reading.reference || 'Brak referencji'}
       </Text>
       <Text
-        className="mt-2 text-[16px] italic leading-6"
+        className={cs('mt-2 text-[15px] italic leading-6', 'mt-2 text-[16px] italic leading-6')}
         style={{
           color: colors.onSurfaceVariant,
           fontFamily: typography.fontFamily,
-          fontSize: 16 * fontScale,
+          fontSize: (isCompact ? 15 : 16) * fontScale,
           lineHeight: 24 * fontScale,
         }}>
         {reading.title}
@@ -49,11 +52,11 @@ export function ReadingCard({ reading, fontScale }: ReadingCardProps) {
           className="mt-4 rounded-[18px] border px-4 py-3"
           style={{ backgroundColor: READINGS_ACCENT_SOFT, borderColor: READINGS_ACCENT_BORDER }}>
           <Text
-            className="text-[15px] font-semibold leading-6"
+            className={cs('text-[14px] font-semibold leading-6', 'text-[15px] font-semibold leading-6')}
             style={{
               color: READINGS_ACCENT,
               fontFamily: typography.fontFamily,
-              fontSize: 15 * fontScale,
+              fontSize: (isCompact ? 14 : 15) * fontScale,
               lineHeight: 24 * fontScale,
             }}>
             {reading.introduction}
@@ -61,12 +64,12 @@ export function ReadingCard({ reading, fontScale }: ReadingCardProps) {
         </View>
       ) : null}
       <Text
-        className="mt-4 text-[16px] leading-8"
+        className={cs('mt-4 text-[15px] leading-7', 'mt-4 text-[16px] leading-8')}
         style={{
           color: colors.onSurface,
           fontFamily: typography.fontFamily,
-          fontSize: 16 * fontScale,
-          lineHeight: 32 * fontScale,
+          fontSize: (isCompact ? 15 : 16) * fontScale,
+          lineHeight: (isCompact ? 28 : 32) * fontScale,
         }}>
         {reading.body}
       </Text>

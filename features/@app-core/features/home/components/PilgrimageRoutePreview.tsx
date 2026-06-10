@@ -4,11 +4,16 @@ import { Image } from 'expo-image';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
-import { pilgrimage, pilgrimageDay, towns } from '../../../constants/pilgrimageRoute';
 import { getPilgrimageAssetSource } from '../../../constants/pilgrimageDayAssets';
-import { useRouteFallbackMode } from '../../../hooks/useRouteFallbackMode';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
+import { useCurrentTime } from '../../../hooks/useCurrentTime';
+import { getCurrentPilgrimageDayFetchNumber } from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
-import { useGetPilgrimageBootstrapQuery } from '../../../services/pilgrimageApi';
+import {
+  PILGRIMAGE_YEAR,
+  useGetPilgrimageDayQuery,
+  useGetPilgrimageQuery,
+} from '../../../services/pilgrimageApi';
 import {
   formatRoutePreviewDistance,
   getRoutePreviewHasGpsSignal,
@@ -26,26 +31,46 @@ const { colors, radii, typography } = pilgrimageRouteTheme;
 
 export function PilgrimageRoutePreview() {
   const { width } = useWindowDimensions();
+  const { cs } = useCompactStyles();
+  const now = useCurrentTime();
   const {
     currentLocation: userLocation,
     hasPermission,
     isServicesEnabled,
+    locationSource,
   } = useUserLocation();
-  const routeFallbackMode = useRouteFallbackMode();
-  const { data, isLoading, isFetching } = useGetPilgrimageBootstrapQuery();
-  const fallbackData =
-    routeFallbackMode.isEnabled && routeFallbackMode.isHydrated
+  const {
+    data: pilgrimage,
+    isLoading: isPilgrimageLoading,
+    isFetching: isPilgrimageFetching,
+  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
+  const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
+  const {
+    data: pilgrimageDay,
+    isLoading: isDayLoading,
+    isFetching: isDayFetching,
+  } = useGetPilgrimageDayQuery(
+    {
+      year: PILGRIMAGE_YEAR,
+      dayNumber: currentDayFetchNumber ?? 1,
+    },
+    {
+      skip: currentDayFetchNumber === null,
+    }
+  );
+  const activeData =
+    pilgrimage && pilgrimageDay
       ? {
           pilgrimage,
           pilgrimageDay,
-          towns,
-          news: [...pilgrimageDay.news],
-          source: 'bundled-fallback' as const,
+          source: 'remote' as const,
         }
       : null;
-  const activeData = data ?? fallbackData;
 
-  if (!activeData && (isLoading || isFetching)) {
+  if (
+    !activeData &&
+    (isPilgrimageLoading || isPilgrimageFetching || isDayLoading || isDayFetching)
+  ) {
     return <AppLoader label="Pobieranie aktualnej trasy..." minHeight={220} />;
   }
 
@@ -56,18 +81,25 @@ export function PilgrimageRoutePreview() {
   const currentLocation = getCurrentRouteLocation(
     activeData.pilgrimageDay,
     userLocation,
-    activeData.towns
+    now,
+    locationSource
   );
   const remainingDistanceKm = getRemainingDistanceFromCurrentLocation({
     day: activeData.pilgrimageDay,
-    towns: activeData.towns,
     currentLocation: userLocation,
+    now,
+    locationSource,
   });
   const walkedDistanceKm = getRoutePreviewWalkedDistanceKm(
     activeData.pilgrimageDay.route.totalDistanceKm,
     remainingDistanceKm
   );
-  const hasSignal = getRoutePreviewHasGpsSignal(isServicesEnabled, hasPermission, userLocation);
+  const hasSignal = getRoutePreviewHasGpsSignal(
+    isServicesEnabled,
+    hasPermission,
+    userLocation,
+    locationSource
+  );
   const currentStopIndex = activeData.pilgrimageDay.schedule.findIndex(
     (item) => item.id === currentLocation.matchedScheduleItem.id
   );
@@ -86,7 +118,6 @@ export function PilgrimageRoutePreview() {
   });
   const fallbackAssetSource = getPilgrimageAssetSource({});
   const {
-    sectionHorizontalPadding,
     topInset,
     cityChipPaddingX,
     cityChipPaddingY,
@@ -104,14 +135,14 @@ export function PilgrimageRoutePreview() {
   } = getRoutePreviewLayout(width);
 
   return (
-    <View className="mt-7" style={{ paddingHorizontal: sectionHorizontalPadding }}>
+    <View className="mt-7">
       <Text
         className="mb-1 text-[12px] font-bold uppercase tracking-[1px]"
         style={{ color: colors.primary, fontFamily: typography.fontFamily }}>
         {`Dzień ${activeData.pilgrimageDay.dayNumber}.`}
       </Text>
       <Text
-        className="mb-[14px] text-[20px] font-bold"
+        className={cs('mb-[14px] text-[18px] font-bold', 'mb-[14px] text-[20px] font-bold')}
         style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
         Aktualna lokalizacja
       </Text>
@@ -119,7 +150,7 @@ export function PilgrimageRoutePreview() {
         style={{
           backgroundColor: '#ffffff',
           borderRadius: radii.lg,
-          aspectRatio: 4 / 5,
+          aspectRatio: 4 / 3,
           overflow: 'hidden',
           elevation: 5,
           shadowColor: '#000000',

@@ -1,9 +1,13 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
-import { type QuartermasterComment, useGetQuartermasterCommentsQuery } from '../../../services/quartermasterApi';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
+import {
+  type QuartermasterComment,
+  useGetQuartermasterCommentsQuery,
+} from '../../../services/quartermasterApi';
 import { PilgrimageQuartermasterCard } from '../components/PilgrimageQuartermasterCard';
 
 const { colors, typography } = pilgrimageRouteTheme;
@@ -18,22 +22,28 @@ export function PilgrimageQuartermasterScreen() {
   };
 
   return (
-    <ScrollView
+    <AppScreenScrollView
       className="flex-1"
       style={{ backgroundColor: colors.surface }}
-      contentContainerClassName="px-4 pt-6 pb-6"
+      contentContainerClassName="pt-5 pb-6"
       showsVerticalScrollIndicator={false}>
-      <View className="mb-2 flex-row items-center justify-between gap-3">
+      <Text
+        className="text-[12px] font-bold uppercase tracking-[1px]"
+        style={{ color: '#7f766d', fontFamily: typography.fontFamily }}>
+        Dziennik dnia
+      </Text>
+      <View className="mb-2 mt-2 flex-row items-center justify-between gap-3">
         <Text
-          className="text-[28px] font-bold"
+          className="text-[32px] font-bold"
           style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
           Kwatermistrz
         </Text>
       </View>
       <Text
-        className="mb-6 text-[16px] leading-6"
+        className="mb-6 text-[16px] leading-7"
         style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
-        Lista komentarzy kwatermistrza. Kluczowe są data publikacji oraz tytuł wpisu.
+        Wieczorne komentarze z trasy. Najnowsze wpisy pokazują dzień pielgrzymki, datę publikacji i
+        tytuł komunikatu.
       </Text>
 
       {isLoading || isFetching ? (
@@ -51,12 +61,19 @@ export function PilgrimageQuartermasterScreen() {
           Brak opublikowanych komentarzy kwatermistrza.
         </Text>
       ) : (
-        <View className="gap-4">
-          {data?.map((item) => (
-            <PilgrimageQuartermasterCard key={item.id} item={item} onPress={handleOpenDetail} />
-          ))}
+        <View>
+          <Text
+            className="mb-4 text-[20px] font-bold"
+            style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+            Poprzednie komentarze
+          </Text>
+          <View className="gap-4">
+            {data?.map((item) => (
+              <PilgrimageQuartermasterCard key={item.id} item={item} onPress={handleOpenDetail} />
+            ))}
+          </View>
         </View>
       )}
-    </ScrollView>
+    </AppScreenScrollView>
   );
 }

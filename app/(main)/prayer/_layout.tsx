@@ -1,13 +1,25 @@
 import { Stack } from 'expo-router';
 
+import { getPilgrimageStackScreenOptions } from '../../../features/@app-core/components/getPilgrimageStackScreenOptions';
+
 export default function PrayerLayout() {
+  const stackScreenOptions = getPilgrimageStackScreenOptions({
+    hideBackRoutes: new Set<string>(['index']),
+  });
+
   return (
     <Stack
-      screenOptions={{
-        headerShown: false,
+      screenOptions={(props) => ({
+        ...stackScreenOptions(props),
         gestureEnabled: true,
-        fullScreenGestureEnabled: true,
-      }}
-    />
+        fullScreenGestureEnabled: false,
+      })}>
+      <Stack.Screen
+        name="book"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
   );
 }

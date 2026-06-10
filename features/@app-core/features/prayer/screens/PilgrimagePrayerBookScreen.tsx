@@ -1,6 +1,8 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import { pilgrimageRouteTheme, PrayerBookIcon } from '../../../../../packages/@app-ui';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import {
   PRAYER_BOOK_ENTRIES,
 } from '../helpers/pilgrimagePrayerBook.helpers';
@@ -10,25 +12,15 @@ const PRAYER_BOOK_ACCENT = '#16A34A';
 const PRAYER_BOOK_ACCENT_SOFT = '#ECFDF3';
 const PRAYER_BOOK_ACCENT_BORDER = '#BBF7D0';
 
-type PilgrimagePrayerBookScreenProps = {
-  onBack: () => void;
-  onSelectEntry: (entryId: (typeof PRAYER_BOOK_ENTRIES)[number]['id']) => void;
-};
+export function PilgrimagePrayerBookScreen() {
+  const router = useRouter();
 
-export function PilgrimagePrayerBookScreen({ onBack, onSelectEntry }: PilgrimagePrayerBookScreenProps) {
   return (
-    <ScrollView
+    <AppScreenScrollView
       className="flex-1"
       style={{ backgroundColor: colors.surface }}
-      contentContainerClassName="px-4 pt-6 pb-6"
+      contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
-      <TouchableOpacity activeOpacity={0.75} onPress={onBack}>
-        <Text
-          className="mb-5 text-[15px] font-semibold"
-          style={{ color: PRAYER_BOOK_ACCENT, fontFamily: typography.fontFamily }}>
-          Wróć do niezbędnika
-        </Text>
-      </TouchableOpacity>
 
       <Text
         className="text-[28px] font-bold"
@@ -46,7 +38,7 @@ export function PilgrimagePrayerBookScreen({ onBack, onSelectEntry }: Pilgrimage
           <TouchableOpacity
             key={entry.id}
             activeOpacity={0.85}
-            onPress={() => onSelectEntry(entry.id)}
+            onPress={() => router.push(`/prayer/book/${entry.id}`)}
             className="rounded-[22px] border px-5 py-5"
             style={{
               backgroundColor: '#ffffff',
@@ -74,6 +66,6 @@ export function PilgrimagePrayerBookScreen({ onBack, onSelectEntry }: Pilgrimage
           </TouchableOpacity>
         ))}
       </View>
-    </ScrollView>
+    </AppScreenScrollView>
   );
 }

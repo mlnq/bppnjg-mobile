@@ -1,76 +1,142 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView } from 'react-native';
+import { RefreshControl, Text } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppLoader } from '../../../components/AppLoader';
+import { PilgrimageRouteLocationInfoModal } from '../../../components/PilgrimageRouteLocationInfoModal';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { PilgrimageConferenceCard } from '../../../components/PilgrimageConferenceCard';
-import { PilgrimageLatestNewsSection } from '../../../components/PilgrimageLatestNewsSection';
 import { PilgrimageQuartermasterSection } from '../../../components/PilgrimageQuartermasterSection';
-import { useGetPilgrimageNotificationsQuery } from '../../../services/notificationsApi';
-import { useGetPilgrimageBootstrapQuery } from '../../../services/pilgrimageApi';
-import { useGetQuartermasterCommentsQuery } from '../../../services/quartermasterApi';
-import { PilgrimageRoutePreview } from '../components/PilgrimageRoutePreview';
+import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
+import { getCurrentPilgrimageDayFetchNumber } from '../../../hooks/useSelectedPilgrimageDay';
+import { useUserLocation } from '../../../hooks/useUserLocation';
+import {
+  PILGRIMAGE_YEAR,
+  useGetPilgrimageDayQuery,
+  useGetPilgrimageQuery,
+} from '../../../services/pilgrimageApi';
+import { formatDistanceKm } from '../../../utils/formatters/formatDistanceKm';
+import { getRemainingDistanceFromCurrentLocation } from '../../../utils/pilgrimageCurrentLocation';
 import { PilgrimageWeatherCard } from '../components/PilgrimageWeatherCard';
+import { PilgrimageHomeHeroCard } from '../components/PilgrimageHomeHeroCard';
+import { getPilgrimageRouteLabels } from '../../route/helpers/pilgrimageRouteLabels';
+import { getRouteLocationMeta } from '../../route/helpers/pilgrimageRouteLocationMeta';
 
-const { colors } = pilgrimageRouteTheme;
+const { colors, typography } = pilgrimageRouteTheme;
 
 type PilgrimageHomeScreenProps = {
-  onShowNews?: () => void;
   onShowConference?: () => void;
   onShowQuartermaster?: () => void;
 };
 
 export function PilgrimageHomeScreen({
-  onShowNews,
   onShowConference,
   onShowQuartermaster,
 }: PilgrimageHomeScreenProps) {
-  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
-  const { isLoading: isBootstrapLoading, isFetching: isBootstrapFetching, refetch: refetchBootstrap } =
-    useGetPilgrimageBootstrapQuery();
+  const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+  const { currentLocation, locationSource } = useUserLocation();
   const {
-    isLoading: isNotificationsLoading,
-    isFetching: isNotificationsFetching,
-    refetch: refetchNotifications,
-  } = useGetPilgrimageNotificationsQuery();
+    data: pilgrimage,
+    isLoading: isPilgrimageLoading,
+    isFetching: isPilgrimageFetching,
+  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
+  const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
   const {
-    isLoading: isQuartermasterLoading,
-    isFetching: isQuartermasterFetching,
-    refetch: refetchQuartermaster,
-  } = useGetQuartermasterCommentsQuery();
-  const handleRefresh = async () => {
-    setIsManualRefreshing(true);
-
-    try {
-      await Promise.all([
-        refetchBootstrap(),
-        refetchNotifications(),
-        refetchQuartermaster(),
-      ]);
-    } finally {
-      setIsManualRefreshing(false);
+    data: pilgrimageDay,
+    isLoading: isDayLoading,
+    isFetching: isDayFetching,
+    refetch: refetchCurrentDay,
+  } = useGetPilgrimageDayQuery(
+    {
+      year: PILGRIMAGE_YEAR,
+      dayNumber: currentDayFetchNumber ?? 1,
+    },
+    {
+      skip: currentDayFetchNumber === null,
     }
-  };
+  );
+  const { isRefreshing: isManualRefreshing, refresh: handleRefresh } = usePilgrimageRefresh({
+    includeNotifications: true,
+    includeQuartermaster: true,
+    additionalRefreshTasks:
+      currentDayFetchNumber !== null ? [() => refetchCurrentDay()] : [],
+  });
+  const activeRouteData =
+    pilgrimage && pilgrimageDay
+      ? {
+          pilgrimage,
+          pilgrimageDay,
+          source: 'remote' as const,
+        }
+      : null;
+  const remainingDistanceKm = activeRouteData
+    ? getRemainingDistanceFromCurrentLocation({
+        day: activeRouteData.pilgrimageDay,
+        currentLocation,
+        locationSource,
+      })
+    : null;
+  const routeLabels = activeRouteData
+    ? getPilgrimageRouteLabels(activeRouteData.pilgrimageDay)
+    : null;
+  const routeLocationMeta = activeRouteData
+    ? getRouteLocationMeta({
+        day: activeRouteData.pilgrimageDay,
+        currentLocation,
+        locationSource,
+      })
+    : null;
 
   return (
-    <ScrollView
-      className="flex-1"
-      style={{ backgroundColor: colors.surface }}
-      contentContainerClassName="px-4 pt-2 pb-6"
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={isManualRefreshing}
-          onRefresh={() => {
-            void handleRefresh();
-          }}
-          tintColor={colors.primary}
+    <>
+      <AppScreenScrollView
+        className="flex-1"
+        style={{ backgroundColor: colors.surface }}
+        contentContainerClassName="pt-2 pb-6"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isManualRefreshing}
+            onRefresh={() => {
+              void handleRefresh();
+            }}
+            tintColor={colors.primary}
+          />
+        }>
+        {activeRouteData ? (
+          <PilgrimageHomeHeroCard
+            remainingDistanceLabel={formatDistanceKm(remainingDistanceKm ?? 0)}
+            dayLabel={`Dzień ${activeRouteData.pilgrimageDay.dayNumber} z ${activeRouteData.pilgrimage.totalDays}`}
+            routeLabel={`${routeLabels?.startLabel ?? 'Brak startu'} → ${routeLabels?.endLabel ?? 'Brak celu dnia'}`}
+            onOpenInfo={() => {
+              setIsInfoModalVisible(true);
+            }}
+          />
+        ) : isPilgrimageLoading || isPilgrimageFetching || isDayLoading || isDayFetching ? (
+          <AppLoader label="Pobieranie aktualnej trasy..." minHeight={320} />
+        ) : (
+          <Text
+            className="mt-6 text-[16px] leading-7"
+            style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+            Nie udało się pobrać aktualnej trasy z API.
+          </Text>
+        )}
+        <PilgrimageQuartermasterSection onShowAll={onShowQuartermaster} />
+        <PilgrimageConferenceCard
+          title={activeRouteData?.pilgrimageDay.conference?.title}
+          onPress={onShowConference}
         />
-      }>
-      <PilgrimageRoutePreview />
-      {/*<PilgrimageLatestNewsSection onShowAll={onShowNews} />*/}
-      <PilgrimageQuartermasterSection onShowAll={onShowQuartermaster} />
-      <PilgrimageConferenceCard onPress={onShowConference} />
-      <PilgrimageWeatherCard />
-    </ScrollView>
+        <PilgrimageWeatherCard />
+      </AppScreenScrollView>
+
+      <PilgrimageRouteLocationInfoModal
+        visible={isInfoModalVisible}
+        modalDescription={routeLocationMeta?.modalDescription ?? ''}
+        scheduleSourceLabel={routeLocationMeta?.scheduleSourceLabel}
+        onClose={() => {
+          setIsInfoModalVisible(false);
+        }}
+      />
+    </>
   );
 }

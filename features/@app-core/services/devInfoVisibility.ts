@@ -7,7 +7,7 @@ export type DevInfoVisibilityState = {
   isHydrated: boolean;
 };
 
-const state: DevInfoVisibilityState = {
+let state: DevInfoVisibilityState = {
   isEnabled: false,
   isHydrated: false,
 };
@@ -21,9 +21,9 @@ function notify() {
 async function hydrateDevInfoVisibility() {
   try {
     const storedValue = await AsyncStorage.getItem(DEV_INFO_VISIBILITY_KEY);
-    state.isEnabled = storedValue === 'true';
+    state = { ...state, isEnabled: storedValue === 'true' };
   } finally {
-    state.isHydrated = true;
+    state = { ...state, isHydrated: true };
     notify();
   }
 }
@@ -43,7 +43,11 @@ export function subscribeDevInfoVisibility(listener: () => void) {
 }
 
 export async function setDevInfoVisibilityEnabled(isEnabled: boolean) {
-  state.isEnabled = isEnabled;
+  if (state.isEnabled === isEnabled) {
+    return;
+  }
+
+  state = { ...state, isEnabled };
   notify();
 
   await AsyncStorage.setItem(DEV_INFO_VISIBILITY_KEY, String(isEnabled));

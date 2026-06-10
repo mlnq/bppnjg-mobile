@@ -7,7 +7,7 @@ export type RouteFallbackModeState = {
   isHydrated: boolean;
 };
 
-const state: RouteFallbackModeState = {
+let state: RouteFallbackModeState = {
   isEnabled: false,
   isHydrated: false,
 };
@@ -21,9 +21,9 @@ function notify() {
 async function hydrateRouteFallbackMode() {
   try {
     const storedValue = await AsyncStorage.getItem(ROUTE_FALLBACK_MODE_KEY);
-    state.isEnabled = storedValue === 'true';
+    state = { ...state, isEnabled: storedValue === 'true' };
   } finally {
-    state.isHydrated = true;
+    state = { ...state, isHydrated: true };
     notify();
   }
 }
@@ -43,7 +43,11 @@ export function subscribeRouteFallbackMode(listener: () => void) {
 }
 
 export async function setRouteFallbackModeEnabled(isEnabled: boolean) {
-  state.isEnabled = isEnabled;
+  if (state.isEnabled === isEnabled) {
+    return;
+  }
+
+  state = { ...state, isEnabled };
   notify();
 
   await AsyncStorage.setItem(ROUTE_FALLBACK_MODE_KEY, String(isEnabled));

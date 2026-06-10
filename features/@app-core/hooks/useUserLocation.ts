@@ -1,18 +1,26 @@
 import { createContext, createElement, ReactNode, useContext, useEffect, useState } from 'react';
 import * as Location from 'expo-location';
+
+import { useRouteLocationSource } from './useRouteLocationSource';
 import { useGpsPermission } from './useGpsPermission';
+import type { LocationSource } from '../store/preferencesSlice';
 
 type UserLocationValue = {
   isLoading: boolean;
   currentLocation: Location.LocationObjectCoords | null;
   hasPermission: boolean;
   isServicesEnabled: boolean;
+  locationSource: LocationSource;
 };
 
 const UserLocationContext = createContext<UserLocationValue | null>(null);
 
 function useUserLocationState(): UserLocationValue {
-  const { isLoading: isPermissionLoading, isGranted, isServicesEnabled } = useGpsPermission();
+  const routeLocationSource = useRouteLocationSource();
+  const isGpsEnabled = routeLocationSource.value !== 'time-only';
+  const { isLoading: isPermissionLoading, isGranted, isServicesEnabled } = useGpsPermission({
+    enabled: isGpsEnabled,
+  });
   const [isLocationLoading, setIsLocationLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObjectCoords | null>(
     null
@@ -21,6 +29,15 @@ function useUserLocationState(): UserLocationValue {
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
     let isMounted = true;
+
+    if (!isGpsEnabled) {
+      setCurrentLocation(null);
+      setIsLocationLoading(false);
+      return () => {
+        isMounted = false;
+        subscription?.remove();
+      };
+    }
 
     if (isPermissionLoading) {
       return () => {
@@ -80,13 +97,14 @@ function useUserLocationState(): UserLocationValue {
       isMounted = false;
       subscription?.remove();
     };
-  }, [isGranted, isPermissionLoading, isServicesEnabled]);
+  }, [isGpsEnabled, isGranted, isPermissionLoading, isServicesEnabled]);
 
   return {
     isLoading: isPermissionLoading || isLocationLoading,
     currentLocation,
     hasPermission: isGranted,
     isServicesEnabled,
+    locationSource: routeLocationSource.value,
   };
 }
 

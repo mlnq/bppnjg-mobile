@@ -17,14 +17,16 @@ import { niedzielaApi } from '../services/niedzielaApi';
 import { notificationsApi } from '../services/notificationsApi';
 import { pilgrimageApi } from '../services/pilgrimageApi';
 import { quartermasterApi } from '../services/quartermasterApi';
+import { preferencesReducer } from './preferencesSlice';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: [pilgrimageApi.reducerPath],
+  whitelist: ['preferences', pilgrimageApi.reducerPath],
 };
 
 const rootReducer = combineReducers({
+  preferences: preferencesReducer,
   [bibliaApi.reducerPath]: bibliaApi.reducer,
   [brewiarzApi.reducerPath]: brewiarzApi.reducer,
   [niedzielaApi.reducerPath]: niedzielaApi.reducer,

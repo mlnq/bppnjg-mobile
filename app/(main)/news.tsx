@@ -1,5 +1,12 @@
+import { Stack } from 'expo-router';
+
 import { PilgrimageNewsScreen } from '../../features/@app-core/features/news/screens/PilgrimageNewsScreen';
 
 export default function NewsRoute() {
-  return <PilgrimageNewsScreen />;
+  return (
+    <>
+      <Stack.Screen options={{ title: 'Info' }} />
+      <PilgrimageNewsScreen />
+    </>
+  );
 }

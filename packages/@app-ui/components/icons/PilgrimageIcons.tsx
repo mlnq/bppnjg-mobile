@@ -109,29 +109,27 @@ export function PartlyCloudyIcon({ size = 40, color = '#d89a00' }: IconProps) {
 }
 
 export function NewsIcon({ size = 22, color = '#93979f', active = false }: NavIconProps) {
-  return (
-    <MaterialIcons name="campaign" size={size} color={active ? colors.primaryContainer : color} />
-  );
+  return <MaterialIcons name="campaign" size={size} color={active ? colors.primary : color} />;
 }
 
 export function BellIcon({ size = 22, color = colors.primary }: IconProps) {
   return <Bell size={size} color={color} strokeWidth={2.1} />;
 }
 
-export function HomeIcon({ size = 22, color = '#93979f', active = false }: NavIconProps) {
-  return (
-    <House size={size} color={active ? colors.primaryContainer : color} strokeWidth={2.1} />
-  );
+export function BackIcon({ size = 22, color = colors.primary }: IconProps) {
+  return <MaterialIcons name="arrow-back-ios-new" size={size} color={color} />;
 }
 
-export function RouteIcon({ size = 22, color = '#93979f', active = false }: NavIconProps) {
-  return (
-    <SlidersHorizontal
-      size={size}
-      color={active ? colors.primaryContainer : color}
-      strokeWidth={2.1}
-    />
-  );
+export function SettingsIcon({ size = 22, color = colors.primary }: IconProps) {
+  return <MaterialCommunityIcons name="cog-outline" size={size} color={color} />;
+}
+
+export function HomeIcon({ size = 22, color = '#93979f' }: NavIconProps) {
+  return <House size={size} color={color} strokeWidth={2.1} />;
+}
+
+export function RouteIcon({ size = 22, color = '#93979f' }: NavIconProps) {
+  return <MapIcon size={size} color={color} />;
 }
 
 export function MapIcon({ size = 22, color = '#93979f', active = false }: NavIconProps) {
@@ -139,19 +137,17 @@ export function MapIcon({ size = 22, color = '#93979f', active = false }: NavIco
     <MaterialCommunityIcons
       name="map"
       size={size}
-      color={active ? colors.primaryContainer : color}
+      color={active ? colors.primary : color}
     />
   );
 }
 
-export function PrayerIcon({ size = 22, color = '#93979f', active = false }: NavIconProps) {
-  const iconColor = active ? colors.primaryContainer : color;
-
+export function PrayerIcon({ size = 22, color = '#93979f' }: NavIconProps) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <Smartphone size={size} color={iconColor} strokeWidth={2.1} />
+      <Smartphone size={size} color={color} strokeWidth={2.1} />
       <View style={{ position: 'absolute', top: size * 0.14 }}>
-        <Heart size={size * 0.33} color={iconColor} strokeWidth={2.3} />
+        <Heart size={size * 0.33} color={color} strokeWidth={2.3} />
       </View>
     </View>
   );
@@ -161,7 +157,7 @@ export function InfoNavIcon({ size = 22, color = '#93979f', active = false }: Na
   return (
     <MessageSquare
       size={size}
-      color={active ? colors.primaryContainer : color}
+      color={active ? colors.primary : color}
       strokeWidth={2.1}
     />
   );

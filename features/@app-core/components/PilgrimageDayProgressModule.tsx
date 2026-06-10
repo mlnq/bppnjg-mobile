@@ -2,8 +2,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { Text, View } from 'react-native';
 
 import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import type { PilgrimageDay, Town } from '../constants/pilgrimageRoute';
-import { getTownById } from '../constants/pilgrimageRoute';
+import type { PilgrimageDay } from '../constants/pilgrimageRoute';
 import { useUserLocation } from '../hooks/useUserLocation';
 import { getRemainingDistanceFromCurrentLocation } from '../utils/pilgrimageCurrentLocation';
 
@@ -16,7 +15,6 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 type PilgrimageDayProgressModuleProps = {
   day: PilgrimageDay;
-  towns: readonly Town[];
   totalDays: number;
   accentSource?: 'time-estimated' | 'gps';
 };
@@ -27,15 +25,14 @@ function formatDistance(value: number) {
 
 export function PilgrimageDayProgressModule({
   day,
-  towns,
   totalDays,
   accentSource = 'gps',
 }: PilgrimageDayProgressModuleProps) {
-  const { currentLocation } = useUserLocation();
+  const { currentLocation, locationSource } = useUserLocation();
   const remainingDistanceKm = getRemainingDistanceFromCurrentLocation({
     day,
-    towns,
     currentLocation,
+    locationSource,
   });
   const walkedDistanceKm = Math.max(0, day.route.totalDistanceKm - remainingDistanceKm);
   const progressPercent = Math.max(
@@ -43,11 +40,11 @@ export function PilgrimageDayProgressModule({
     Math.min(100, (walkedDistanceKm / Math.max(day.route.totalDistanceKm, 1)) * 100)
   );
 
-  const startTown = getTownById(day.route.startTownId, towns);
-  const endTown = getTownById(day.route.endTownId, towns);
+  const startStop = day.schedule[0];
+  const endStop = day.schedule[day.schedule.length - 1];
   const isScheduleEstimated = accentSource === 'time-estimated';
   const accentColor = isScheduleEstimated ? colors.secondary : colors.primary;
-  const trackColor = isScheduleEstimated ? '#f8edcf' : '#f7e7f0';
+  const trackColor = isScheduleEstimated ? colors.secondaryContainer : colors.primaryContainer;
 
   const strokeDashoffset = CIRCUMFERENCE - (progressPercent / 100) * CIRCUMFERENCE;
 
@@ -61,8 +58,8 @@ export function PilgrimageDayProgressModule({
       <Text
         className="mb-5 text-[28px] font-bold leading-10"
         style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-        {startTown?.name ?? 'Brak startu'} →{'\n'}
-        {endTown?.name ?? 'Brak celu dnia'}
+        {startStop?.townName ?? startStop?.name ?? 'Brak startu'} →{'\n'}
+        {endStop?.townName ?? endStop?.name ?? 'Brak celu dnia'}
       </Text>
 
       <View className="px-1 py-1">

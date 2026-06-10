@@ -1,10 +1,12 @@
-import { useSyncExternalStore } from 'react';
+import { useSelector } from 'react-redux';
 
-import {
-  getDevInfoVisibilitySnapshot,
-  subscribeDevInfoVisibility,
-} from '../services/devInfoVisibility';
+import type { RootState } from '../store/store';
 
 export function useDevInfoVisibility() {
-  return useSyncExternalStore(subscribeDevInfoVisibility, getDevInfoVisibilitySnapshot);
+  const isEnabled = useSelector((state: RootState) => state.preferences.isDevInfoVisible);
+
+  return {
+    isEnabled,
+    isHydrated: true,
+  };
 }

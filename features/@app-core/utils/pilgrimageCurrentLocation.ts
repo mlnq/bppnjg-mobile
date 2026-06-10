@@ -2,18 +2,24 @@ import type { LocationObjectCoords } from 'expo-location';
 
 import {
   type GeoCoordinate,
-  getRemainingDistanceKm,
-  getTownById,
-  getWaypointById,
-  pilgrimageDay,
   type PilgrimageDay,
   type PilgrimageDayScheduleItem,
-  towns as bundledTowns,
-  type Town,
+  getRemainingDistanceKm,
+  getWaypointById,
 } from '../constants/pilgrimageRoute';
+import type { LocationSource } from '../store/preferencesSlice';
+
+// Types
+
+type PilgrimageRouteLocationPoint = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+};
 
 export type PilgrimageCurrentLocationResult = {
-  location: Town;
+  location: PilgrimageRouteLocationPoint;
   matchedScheduleItem: PilgrimageDayScheduleItem;
   source: 'time-estimated' | 'gps';
   fallbackReason?: 'outside-route' | 'location-unavailable';
@@ -21,255 +27,336 @@ export type PilgrimageCurrentLocationResult = {
   traveledDistanceKm?: number;
 };
 
+type RouteParams = {
+  day: PilgrimageDay;
+  currentLocation?: LocationObjectCoords | null;
+  now?: Date;
+  locationSource?: LocationSource;
+};
+
+// Constants
+
 const SCHEDULE_MATCH_RADIUS_KM = 2;
 const GPS_ROUTE_MATCH_RADIUS_KM = 2;
 const DISTANCE_ROUNDING_STEP_KM = 0.5;
+const DEFAULT_WALKING_SPEED_KMH = 4.5;
+const MIN_WALKING_SPEED_KMH = 3;
+const MAX_WALKING_SPEED_KMH = 7;
+
+// Geo helpers
 
 const toRadians = (deg: number) => (deg * Math.PI) / 180;
 
-const getDistanceKm = (start: GeoCoordinate, end: GeoCoordinate): number => {
-  const earthRadiusKm = 6371;
-  const dlatitude = toRadians(end.latitude - start.latitude);
-  const dlongitude = toRadians(end.longitude - start.longitude);
-  const a =
-    Math.sin(dlatitude / 2) ** 2 +
-    Math.cos(toRadians(start.latitude)) *
-      Math.cos(toRadians(end.latitude)) *
-      Math.sin(dlongitude / 2) ** 2;
-  return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
-
-const projectPointToSegment = (point: GeoCoordinate, start: GeoCoordinate, end: GeoCoordinate) => {
-  const meanlatitude = toRadians((start.latitude + end.latitude + point.latitude) / 3);
-  const kmPerDeglatitude = 111.32;
-  const kmPerDeglongitude = 111.32 * Math.cos(meanlatitude);
-
-  const ax = start.longitude * kmPerDeglongitude,
-    ay = start.latitude * kmPerDeglatitude;
-  const bx = end.longitude * kmPerDeglongitude,
-    by = end.latitude * kmPerDeglatitude;
-  const px = point.longitude * kmPerDeglongitude,
-    py = point.latitude * kmPerDeglatitude;
-
-  const abx = bx - ax,
-    aby = by - ay;
-  const abLengthSq = abx * abx + aby * aby;
-
-  if (abLengthSq === 0) return { ratio: 0, distanceKm: Math.hypot(px - ax, py - ay) };
-
-  const ratio = Math.min(1, Math.max(0, ((px - ax) * abx + (py - ay) * aby) / abLengthSq));
-  return { ratio, distanceKm: Math.hypot(px - (ax + abx * ratio), py - (ay + aby * ratio)) };
-};
-
-const roundDistanceKm = (distanceKm: number) =>
-  Math.round(distanceKm / DISTANCE_ROUNDING_STEP_KM) * DISTANCE_ROUNDING_STEP_KM;
-
-function getScheduleItemTown(
-  item: PilgrimageDayScheduleItem,
-  day: PilgrimageDay,
-  availableTowns: readonly Town[]
-) {
-  const waypoint = getWaypointById(day.route, item.waypointId);
-  return waypoint ? getTownById(waypoint.townId, availableTowns) : undefined;
+function getDistanceKm(a: GeoCoordinate, b: GeoCoordinate): number {
+  const R = 6371;
+  const dLat = toRadians(b.latitude - a.latitude);
+  const dLng = toRadians(b.longitude - a.longitude);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(a.latitude)) * Math.cos(toRadians(b.latitude)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
 }
 
-function estimateGeoRouteProgress(day: PilgrimageDay, coords: GeoCoordinate) {
+function projectPointToSegment(point: GeoCoordinate, start: GeoCoordinate, end: GeoCoordinate) {
+  const midLat = toRadians((start.latitude + end.latitude + point.latitude) / 3);
+  const kLat = 111.32;
+  const kLng = 111.32 * Math.cos(midLat);
+
+  const [ax, ay] = [start.longitude * kLng, start.latitude * kLat];
+  const [dx, dy] = [
+    (end.longitude - start.longitude) * kLng,
+    (end.latitude - start.latitude) * kLat,
+  ];
+  const [px, py] = [point.longitude * kLng, point.latitude * kLat];
+
+  const lenSq = dx * dx + dy * dy;
+  const ratio =
+    lenSq === 0 ? 0 : Math.min(1, Math.max(0, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+
+  return {
+    ratio,
+    distanceKm: Math.hypot(px - (ax + dx * ratio), py - (ay + dy * ratio)),
+  };
+}
+
+const roundDistance = (km: number) =>
+  Math.round(km / DISTANCE_ROUNDING_STEP_KM) * DISTANCE_ROUNDING_STEP_KM;
+
+const parseTimeMinutes = (time: string) => {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+};
+
+const toCoords = (loc: LocationObjectCoords): GeoCoordinate => ({
+  latitude: loc.latitude,
+  longitude: loc.longitude,
+});
+
+// Route progress
+
+type RouteProgress = {
+  distanceToPathKm: number;
+  traveledDistanceKm: number;
+  remainingDistanceKm: number;
+};
+
+function estimateRouteProgress(day: PilgrimageDay, coords: GeoCoordinate): RouteProgress | null {
   const path = day.route.googleRoutePath;
   if (!path || path.length < 2) return null;
 
-  let best = { traveledPathKm: 0, distanceToPathKm: Infinity };
-  let cumulativeBeforeKm = 0;
+  let bestTraveled = 0;
+  let bestDistToPath = Infinity;
+  let cumulativeKm = 0;
 
   for (let i = 0; i < path.length - 1; i++) {
-    const segmentKm = getDistanceKm(path[i], path[i + 1]);
-    const proj = projectPointToSegment(coords, path[i], path[i + 1]);
+    const segKm = getDistanceKm(path[i], path[i + 1]);
+    const { ratio, distanceKm } = projectPointToSegment(coords, path[i], path[i + 1]);
 
-    if (proj.distanceKm < best.distanceToPathKm) {
-      best = {
-        traveledPathKm: cumulativeBeforeKm + segmentKm * proj.ratio,
-        distanceToPathKm: proj.distanceKm,
-      };
+    if (distanceKm < bestDistToPath) {
+      bestDistToPath = distanceKm;
+      bestTraveled = cumulativeKm + segKm * ratio;
     }
-    cumulativeBeforeKm += segmentKm;
+    cumulativeKm += segKm;
   }
 
-  const totalPathKm = day.route.totalDistanceKm;
-  const traveled = Math.min(totalPathKm, best.traveledPathKm);
+  const traveled = Math.min(day.route.totalDistanceKm, bestTraveled);
+
   return {
-    distanceToPathKm: best.distanceToPathKm,
+    distanceToPathKm: bestDistToPath,
     traveledDistanceKm: traveled,
-    remainingDistanceKm: roundDistanceKm(Math.max(0, totalPathKm - traveled)),
+    remainingDistanceKm: roundDistance(Math.max(0, day.route.totalDistanceKm - traveled)),
   };
+}
+
+// GPS progress — null if outside route or unavailable
+
+function getGpsProgress(
+  day: PilgrimageDay,
+  currentLocation: LocationObjectCoords | null
+): RouteProgress | null {
+  if (!currentLocation) return null;
+  const progress = estimateRouteProgress(day, toCoords(currentLocation));
+  return progress && progress.distanceToPathKm <= GPS_ROUTE_MATCH_RADIUS_KM ? progress : null;
+}
+
+// Schedule helpers
+
+function getScheduleItemLocation(
+  item: PilgrimageDayScheduleItem,
+  day: PilgrimageDay
+): PilgrimageRouteLocationPoint | undefined {
+  const waypoint = getWaypointById(day.route, item.waypointId);
+  const latitude = item.latitude ?? waypoint?.latitude ?? null;
+  const longitude = item.longitude ?? waypoint?.longitude ?? null;
+
+  if (latitude === null || longitude === null) return undefined;
+
+  return {
+    id: item.id,
+    name: item.townName ?? item.name ?? 'Nieznany punkt',
+    latitude,
+    longitude,
+  };
+}
+
+function buildWaypointDistanceMap(day: PilgrimageDay): Map<string, number> {
+  const map = new Map<string, number>();
+  let cumulative = 0;
+  [...day.route.waypoints]
+    .sort((a, b) => a.orderIndex - b.orderIndex)
+    .forEach((wp) => {
+      map.set(wp.id, cumulative);
+      cumulative += wp.distanceToNextKm ?? 0;
+    });
+  return map;
 }
 
 function getScheduleItemByDistance(
   day: PilgrimageDay,
   traveledKm: number,
-  availableTowns: readonly Town[],
   coords?: GeoCoordinate
-) {
-  let cumulativeKm = 0;
-  const waypointDistances = new Map<string, number>();
-
-  [...day.route.waypoints]
-    .sort((left, right) => left.orderIndex - right.orderIndex)
-    .forEach((waypoint) => {
-      waypointDistances.set(waypoint.id, cumulativeKm);
-      cumulativeKm += waypoint.distanceToNextKm ?? 0;
-    });
-
-  const scheduleWithDistances = day.schedule
-    .map((item) => ({
-      item,
-      distance: waypointDistances.get(item.waypointId) ?? 0,
-    }))
-    .sort((left, right) => left.distance - right.distance);
+): PilgrimageDayScheduleItem {
+  const waypointDistances = buildWaypointDistanceMap(day);
+  const sorted = [...day.schedule]
+    .map((item) => ({ item, distanceKm: waypointDistances.get(item.waypointId) ?? 0 }))
+    .sort((a, b) => a.distanceKm - b.distanceKm);
 
   if (coords) {
-    for (let i = scheduleWithDistances.length - 1; i >= 0; i--) {
-      const candidateTown = getScheduleItemTown(scheduleWithDistances[i].item, day, availableTowns);
-      if (!candidateTown) {
-        continue;
-      }
-      const distanceToCandidateKm = getDistanceKm(coords, candidateTown);
-
-      if (distanceToCandidateKm <= SCHEDULE_MATCH_RADIUS_KM) {
-        return scheduleWithDistances[i].item;
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      const location = getScheduleItemLocation(sorted[i].item, day);
+      if (location && getDistanceKm(coords, location) <= SCHEDULE_MATCH_RADIUS_KM) {
+        return sorted[i].item;
       }
     }
   }
 
-  for (let i = scheduleWithDistances.length - 1; i >= 0; i--) {
-    if (scheduleWithDistances[i].distance <= traveledKm) {
-      return scheduleWithDistances[i].item;
-    }
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (sorted[i].distanceKm <= traveledKm) return sorted[i].item;
   }
 
   return day.schedule[0];
 }
 
-function getScheduleItemByTime(day: PilgrimageDay, now: Date) {
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const sorted = [...day.schedule].sort((left, right) => {
-    const leftMinutes = parseInt(left.time.split(':')[0]) * 60 + parseInt(left.time.split(':')[1]);
-    const rightMinutes =
-      parseInt(right.time.split(':')[0]) * 60 + parseInt(right.time.split(':')[1]);
-
-    return leftMinutes - rightMinutes;
-  });
-
-  for (let i = sorted.length - 1; i >= 0; i--) {
-    const itemMinutes =
-      parseInt(sorted[i].time.split(':')[0]) * 60 + parseInt(sorted[i].time.split(':')[1]);
-
-    if (itemMinutes <= currentMinutes) {
-      return sorted[i];
-    }
-  }
-
-  return sorted[0];
+function getScheduleItemByTime(day: PilgrimageDay, now: Date): PilgrimageDayScheduleItem {
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const sorted = [...day.schedule].sort(
+    (a, b) => parseTimeMinutes(a.time) - parseTimeMinutes(b.time)
+  );
+  return sorted.findLast((s) => parseTimeMinutes(s.time) <= nowMinutes) ?? sorted[0];
 }
 
-export function getCurrentRouteLocation(
-  day: PilgrimageDay = pilgrimageDay,
-  currentLocation: LocationObjectCoords | null = null,
-  availableTowns: readonly Town[] = bundledTowns,
-  now = new Date()
+function buildResult(
+  item: PilgrimageDayScheduleItem,
+  day: PilgrimageDay,
+  source: PilgrimageCurrentLocationResult['source'],
+  fallbackReason?: PilgrimageCurrentLocationResult['fallbackReason'],
+  progress?: RouteProgress
 ): PilgrimageCurrentLocationResult {
-  if (currentLocation) {
-    const progress = estimateGeoRouteProgress(day, {
-      latitude: currentLocation.latitude,
-      longitude: currentLocation.longitude,
-    });
+  const location = getScheduleItemLocation(item, day);
+  const firstWaypoint = day.route.waypoints[0];
 
-    if (progress && progress.distanceToPathKm <= GPS_ROUTE_MATCH_RADIUS_KM) {
-      const item = getScheduleItemByDistance(day, progress.traveledDistanceKm, availableTowns, {
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-      });
-
-      return {
-        location: getScheduleItemTown(item, day, availableTowns)!,
-        matchedScheduleItem: item,
-        source: 'gps',
-        ...progress,
-      };
-    }
-
-    return getCurrentScheduleLocation(day, now, availableTowns, 'outside-route');
-  }
-
-  return getCurrentScheduleLocation(day, now, availableTowns, 'location-unavailable');
-}
-
-export function getCurrentScheduleLocation(
-  day: PilgrimageDay = pilgrimageDay,
-  now = new Date(),
-  availableTowns: readonly Town[] = bundledTowns,
-  fallbackReason?: 'outside-route' | 'location-unavailable'
-): PilgrimageCurrentLocationResult {
-  const item = getScheduleItemByTime(day, now);
   return {
-    location: getScheduleItemTown(item, day, availableTowns)!,
+    location: location ?? {
+      id: item.id,
+      name: item.townName ?? item.name ?? 'Nieznany punkt',
+      latitude: firstWaypoint?.latitude ?? 0,
+      longitude: firstWaypoint?.longitude ?? 0,
+    },
     matchedScheduleItem: item,
-    source: 'time-estimated',
+    source,
     fallbackReason,
+    traveledDistanceKm: progress?.traveledDistanceKm,
+    remainingDistanceKm: progress?.remainingDistanceKm,
   };
 }
 
-export function getRemainingDistanceFromCurrentLocation(
-  params: {
-    day?: PilgrimageDay;
-    towns?: readonly Town[];
-    currentLocation?: LocationObjectCoords | null;
-    now?: Date;
-  } = {}
-) {
-  const day = params.day ?? pilgrimageDay;
-  const availableTowns = params.towns ?? bundledTowns;
+// Public API
 
-  if (!params.currentLocation) {
-    const scheduleLocation = getCurrentScheduleLocation(day, params.now ?? new Date(), availableTowns);
-
-    return getRemainingDistanceKm(day, scheduleLocation.location.id);
+export function getCurrentRouteLocation(
+  day: PilgrimageDay,
+  currentLocation: LocationObjectCoords | null = null,
+  now = new Date(),
+  locationSource: LocationSource = 'auto'
+): PilgrimageCurrentLocationResult {
+  if (locationSource === 'time-only') {
+    return getScheduleBasedLocation(day, now);
   }
 
-  const progress = estimateGeoRouteProgress(day, {
-    latitude: params.currentLocation.latitude,
-    longitude: params.currentLocation.longitude,
-  });
+  const progress =
+    locationSource === 'gps-only' || locationSource === 'auto'
+      ? getGpsProgress(day, currentLocation)
+      : null;
 
-  return progress?.remainingDistanceKm ?? getRemainingDistanceKm(day, day.route.startTownId);
+  if (progress) {
+    const coords = toCoords(currentLocation!);
+    const item = getScheduleItemByDistance(day, progress.traveledDistanceKm, coords);
+    return buildResult(item, day, 'gps', undefined, progress);
+  }
+
+  if (locationSource === 'gps-only') {
+    return getScheduleBasedLocation(day, now, 'location-unavailable');
+  }
+
+  const fallbackReason = currentLocation ? 'outside-route' : 'location-unavailable';
+  return getScheduleBasedLocation(day, now, fallbackReason);
 }
 
-export function getRouteStatusDescriptionFromCurrentLocation(
-  params: {
-    day?: PilgrimageDay;
-    towns?: readonly Town[];
-    currentLocation?: LocationObjectCoords | null;
-    now?: Date;
-  } = {}
-) {
-  const day = params.day ?? pilgrimageDay;
-  const availableTowns = params.towns ?? bundledTowns;
-  const currentRouteLocation = getCurrentRouteLocation(
-    day,
-    params.currentLocation ?? null,
-    availableTowns,
-    params.now ?? new Date()
+export function getScheduleBasedLocation(
+  day: PilgrimageDay,
+  now = new Date(),
+  fallbackReason?: 'outside-route' | 'location-unavailable'
+): PilgrimageCurrentLocationResult {
+  const item = getScheduleItemByTime(day, now);
+  return buildResult(item, day, 'time-estimated', fallbackReason);
+}
+
+export function getRemainingDistanceFromCurrentLocation(params: RouteParams): number {
+  const { day } = params;
+  const locationSource = params.locationSource ?? 'auto';
+
+  if (locationSource === 'time-only') {
+    const location = getScheduleBasedLocation(day, params.now ?? new Date());
+    return getRemainingDistanceKm(day, location.location.id);
+  }
+
+  const progress = getGpsProgress(day, params.currentLocation ?? null);
+
+  if (progress) return progress.remainingDistanceKm;
+
+  const location = getScheduleBasedLocation(day, params.now ?? new Date());
+  return getRemainingDistanceKm(day, location.location.id);
+}
+
+// Duration estimate
+
+function getEffectiveWalkingSpeedKmh(day: PilgrimageDay): number {
+  if (day.schedule.length < 2) return DEFAULT_WALKING_SPEED_KMH;
+
+  const sorted = [...day.schedule].sort(
+    (a, b) => parseTimeMinutes(a.time) - parseTimeMinutes(b.time)
   );
-  const remainingDistanceKm =
-    currentRouteLocation.remainingDistanceKm ??
-    getRemainingDistanceKm(day, currentRouteLocation.location.id);
-  const formattedDistanceKm = remainingDistanceKm.toFixed(1);
+  const totalBreakMin = sorted
+    .slice(1)
+    .reduce((sum, item) => sum + Math.max(0, item.durationMin ?? 0), 0);
+  const windowMin = parseTimeMinutes(sorted.at(-1)!.time) - parseTimeMinutes(sorted[0].time);
+  const movingMin = windowMin - totalBreakMin;
 
-  if (currentRouteLocation.source === 'gps') {
-    return `Jesteś na właściwej ścieżce. Do przejścia pozostało około ${formattedDistanceKm} km.`;
+  if (movingMin > 0) {
+    const speed = (day.route.totalDistanceKm / movingMin) * 60;
+    if (speed >= MIN_WALKING_SPEED_KMH && speed <= MAX_WALKING_SPEED_KMH) return speed;
   }
 
-  if (currentRouteLocation.fallbackReason === 'outside-route') {
-    return `Jesteś poza zasięgiem trasy. Zgodnie z planem, do przejścia pozostało około ${formattedDistanceKm} km.`;
-  }
+  return DEFAULT_WALKING_SPEED_KMH;
+}
 
-  return `Twoja pozycja jest mierzona od ostatniego minionego postoju. Zgodnie z czasem, do przejścia pozostało około ${formattedDistanceKm} km.`;
+export function getEstimatedRemainingDurationMinutes(
+  params: RouteParams
+): number {
+  const { day } = params;
+  const now = params.now ?? new Date();
+  const currentLocation = params.currentLocation ?? null;
+  const locationSource = params.locationSource ?? 'auto';
+
+  const result = getCurrentRouteLocation(day, currentLocation, now, locationSource);
+  // Prefer GPS remaining distance from result; fall back to schedule-based
+  const remainingKm = result.remainingDistanceKm ?? getRemainingDistanceKm(day, result.location.id);
+
+  const currentIdx = day.schedule.findIndex((s) => s.id === result.matchedScheduleItem.id);
+  const remainingBreakMin = day.schedule
+    .slice(currentIdx + 1)
+    .reduce((sum, item) => sum + Math.max(0, item.durationMin ?? 0), 0);
+
+  return Math.max(
+    0,
+    Math.round((remainingKm / getEffectiveWalkingSpeedKmh(day)) * 60 + remainingBreakMin)
+  );
+}
+
+// Status description
+
+export function getRouteStatusDescriptionFromCurrentLocation(
+  params: RouteParams
+): string {
+  const { day } = params;
+  const now = params.now ?? new Date();
+  const locationSource = params.locationSource ?? 'auto';
+
+  const result = getCurrentRouteLocation(day, params.currentLocation ?? null, now, locationSource);
+  const remainingKm =
+    result.remainingDistanceKm ??
+    getRemainingDistanceFromCurrentLocation({
+      day,
+      currentLocation: params.currentLocation,
+      now,
+      locationSource,
+    });
+  const formatted = remainingKm.toFixed(1);
+
+  if (result.source === 'gps') {
+    return `Jesteś na właściwej ścieżce. Do przejścia pozostało około ${formatted} km.`;
+  }
+  if (result.fallbackReason === 'outside-route') {
+    return `Jesteś poza zasięgiem trasy. Zgodnie z planem, do przejścia pozostało około ${formatted} km.`;
+  }
+  return `Twoja pozycja jest mierzona od ostatniego minionego postoju. Zgodnie z czasem, do przejścia pozostało około ${formatted} km.`;
 }

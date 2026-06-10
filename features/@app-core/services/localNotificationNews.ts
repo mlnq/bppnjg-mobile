@@ -2,55 +2,16 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Notifications from 'expo-notifications';
 
 import type {
-  PilgrimageNewsCategory,
   PilgrimageNewsItem,
-  PilgrimagePushType,
 } from '../constants/pilgrimageRoute';
+import {
+  mapNotificationNewsCategory,
+  mapNotificationPushType,
+} from './notificationNewsMapping';
 import { resolvePushNotificationRoute } from './pushNotificationNavigation';
 
 const LOCAL_NOTIFICATION_NEWS_FILE = `${FileSystem.documentDirectory ?? ''}notification-news.json`;
 const MAX_LOCAL_NOTIFICATION_NEWS_ITEMS = 50;
-const NEWS_CATEGORIES: readonly PilgrimageNewsCategory[] = [
-  'announcement',
-  'logistics',
-  'spiritual',
-  'weather',
-];
-const PUSH_TYPES: readonly PilgrimagePushType[] = [
-  'announcement',
-  'logistics',
-  'spiritual',
-  'weather',
-  'medical',
-  'general',
-  'quartermaster',
-  'test',
-];
-
-function toNewsCategory(value: unknown): PilgrimageNewsCategory {
-  if (typeof value !== 'string') {
-    return 'announcement';
-  }
-
-  if (value === 'medical' || value === 'quartermaster') {
-    return 'logistics';
-  }
-
-  if (value === 'general' || value === 'test') {
-    return 'announcement';
-  }
-
-  return NEWS_CATEGORIES.includes(value as PilgrimageNewsCategory)
-    ? (value as PilgrimageNewsCategory)
-    : 'announcement';
-}
-
-function toPushType(value: unknown): PilgrimagePushType | undefined {
-  return typeof value === 'string' && PUSH_TYPES.includes(value as PilgrimagePushType)
-    ? (value as PilgrimagePushType)
-    : undefined;
-}
-
 function toBoolean(value: unknown) {
   if (typeof value === 'boolean') {
     return value;
@@ -88,10 +49,10 @@ function normalizeStoredNewsItem(item: Partial<PilgrimageNewsItem>): PilgrimageN
     title: item.title,
     summary: item.summary,
     publishedAt: item.publishedAt,
-    category: toNewsCategory(item.category),
+    category: mapNotificationNewsCategory(item.category),
     isPinned: typeof item.isPinned === 'boolean' ? item.isPinned : undefined,
     targetRoute: typeof item.targetRoute === 'string' ? item.targetRoute : undefined,
-    pushType: toPushType(item.pushType),
+    pushType: mapNotificationPushType(item.pushType),
   };
 }
 
@@ -184,10 +145,10 @@ export function mapPushNotificationToNewsItem(
     title,
     summary,
     publishedAt,
-    category: toNewsCategory(data.category),
+    category: mapNotificationNewsCategory(data.category),
     isPinned: toBoolean(data.isPinned) || undefined,
     targetRoute: resolvePushNotificationRoute(data),
-    pushType: toPushType(data.type ?? data.category),
+    pushType: mapNotificationPushType(data.type ?? data.category),
   };
 }
 

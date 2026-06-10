@@ -1,7 +1,4 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { Text, TouchableOpacity, View } from 'react-native';
 import BookHeart from 'lucide-react-native/dist/esm/icons/book-heart.mjs';
 import BookOpen from 'lucide-react-native/dist/esm/icons/book-open.mjs';
 import ChevronRight from 'lucide-react-native/dist/esm/icons/chevron-right.mjs';
@@ -11,12 +8,10 @@ import Music4 from 'lucide-react-native/dist/esm/icons/music-4.mjs';
 import {
   pilgrimageRouteTheme,
 } from '../../../../../packages/@app-ui';
-import { brewiarzApi } from '../../../services/brewiarzApi';
-import { niedzielaApi } from '../../../services/niedzielaApi';
-import type { AppDispatch } from '../../../store/store';
+import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
+import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import { DailyReadingCard } from '../components/DailyReadingCard';
 import { PrayerTileCard } from '../components/PrayerTileCard';
-import { OFFICE_OPTIONS } from '../../breviary/helpers/pilgrimageBreviary.helpers';
 import {
   PRAYER_TILES,
   getPrayerTilePressHandler,
@@ -24,6 +19,7 @@ import {
 } from '../helpers/pilgrimagePrayer.helpers';
 
 const { typography } = pilgrimageRouteTheme;
+const PRAYER_ICON_STROKE_WIDTH = 1.7;
 
 type PilgrimagePrayerScreenProps = {
   onNavigateToBreviary: () => void;
@@ -36,54 +32,35 @@ export function PilgrimagePrayerScreen({
   onNavigateToReadings,
   onNavigateToPrayerBook,
 }: PilgrimagePrayerScreenProps) {
-  const dispatch = useDispatch<AppDispatch>();
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(
-        niedzielaApi.util.prefetch('getDailyReadings', undefined, {
-          force: false,
-        })
-      );
-
-      for (const { id } of OFFICE_OPTIONS) {
-        dispatch(
-          brewiarzApi.util.prefetch('getBreviaryOffice', id, {
-            force: false,
-          })
-        );
-      }
-    }, [dispatch])
-  );
+  const { cs } = useCompactStyles();
 
   const getTileIcon = (iconName: PrayerTileIconName, color: string) => {
     if (iconName === 'hymnal') {
-      return <Music4 size={40} color={color} strokeWidth={2.1} />;
+      return <Music4 size={40} color={color} strokeWidth={PRAYER_ICON_STROKE_WIDTH} />;
     }
 
     if (iconName === 'readings') {
-      return <BookOpen size={40} color={color} strokeWidth={2.1} />;
+      return <BookOpen size={40} color={color} strokeWidth={PRAYER_ICON_STROKE_WIDTH} />;
     }
 
     if (iconName === 'prayer-book') {
-      return <BookHeart size={40} color={color} strokeWidth={2.1} />;
+      return <BookHeart size={40} color={color} strokeWidth={PRAYER_ICON_STROKE_WIDTH} />;
     }
 
-    return <Church size={40} color={color} strokeWidth={2.1} />;
+    return <Church size={40} color={color} strokeWidth={PRAYER_ICON_STROKE_WIDTH} />;
   };
 
   return (
-    <ScrollView
+    <AppScreenScrollView
       className="flex-1"
       style={{ backgroundColor: '#f3f5f8' }}
-      contentContainerClassName="px-4 pt-5 pb-8"
+      contentContainerClassName="pt-5 pb-8"
       showsVerticalScrollIndicator={false}>
       <View className="flex-row flex-wrap justify-between gap-y-5">
         {PRAYER_TILES.map((tile) => (
           <View key={tile.id} className="basis-[48.5%]">
             <PrayerTileCard
               icon={getTileIcon(tile.iconName, tile.iconColor)}
-              subtitle={tile.subtitle}
               title={tile.title}
               onPress={getPrayerTilePressHandler(tile.id, {
                 onNavigateToBreviary,
@@ -95,9 +72,10 @@ export function PilgrimagePrayerScreen({
         ))}
       </View>
 
-      <View className="mt-9">
+
+      {/* <View className="mt-9">
         <DailyReadingCard />
-      </View>
+      </View> */}
 
       <TouchableOpacity
         activeOpacity={0.8}
@@ -112,22 +90,22 @@ export function PilgrimagePrayerScreen({
           elevation: 2,
         }}>
         <View className="mr-4">
-          <Music4 size={30} color="#842160" strokeWidth={2.1} />
+          <Music4 size={30} color="#842160" strokeWidth={PRAYER_ICON_STROKE_WIDTH} />
         </View>
         <View className="flex-1">
           <Text
-            className="text-[18px] font-bold"
+            className={cs('text-[17px] font-bold', 'text-[18px] font-bold')}
             style={{ color: '#172033', fontFamily: typography.fontFamily }}>
             Pieśń pielgrzyma
           </Text>
           <Text
-            className="mt-1 text-[15px]"
+            className={cs('mt-1 text-[14px]', 'mt-1 text-[15px]')}
             style={{ color: '#6b7688', fontFamily: typography.fontFamily }}>
-            Tradycyjna pieśń pielgrzymkowa
+            Pieśń pielgrzymkowa na Jasnej Górze
           </Text>
         </View>
-        <ChevronRight size={26} color="#a7afbb" strokeWidth={2.1} />
+        <ChevronRight size={26} color="#a7afbb" strokeWidth={1.8} />
       </TouchableOpacity>
-    </ScrollView>
+    </AppScreenScrollView>
   );
 }

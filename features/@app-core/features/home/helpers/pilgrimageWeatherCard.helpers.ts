@@ -1,8 +1,15 @@
 import type { PilgrimageWeatherIcon } from '../../../constants/pilgrimageRoute';
 
-export type WeatherIconName = 'cloudy' | 'rain' | 'storm' | 'partlyCloudy' | 'sunny';
+export type WeatherIconName =
+  | 'cloudy'
+  | 'rain'
+  | 'storm'
+  | 'partlyCloudy'
+  | 'partlyCloudyNight'
+  | 'sunny'
+  | 'clearNight';
 
-export function getWeatherIconName(icon: PilgrimageWeatherIcon): WeatherIconName {
+export function getWeatherIconName(icon: PilgrimageWeatherIcon, isDay = true): WeatherIconName {
   if (icon === 'cloudy') {
     return 'cloudy';
   }
@@ -16,8 +23,8 @@ export function getWeatherIconName(icon: PilgrimageWeatherIcon): WeatherIconName
   }
 
   if (icon === 'partlyCloudy') {
-    return 'partlyCloudy';
+    return isDay ? 'partlyCloudy' : 'partlyCloudyNight';
   }
 
-  return 'sunny';
+  return isDay ? 'sunny' : 'clearNight';
 }

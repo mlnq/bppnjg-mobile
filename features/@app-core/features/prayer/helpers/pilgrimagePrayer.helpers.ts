@@ -4,7 +4,6 @@ export type PrayerTileIconName = 'hymnal' | 'readings' | 'prayer-book' | 'brevia
 export type PrayerTileDefinition = {
   id: PrayerTileId;
   title: string;
-  subtitle: string;
   iconName: PrayerTileIconName;
   iconColor: string;
 };
@@ -13,28 +12,24 @@ export const PRAYER_TILES: readonly PrayerTileDefinition[] = [
   {
     id: 'hymnal',
     title: 'Śpiewnik',
-    subtitle: 'Pieśni na dziś',
     iconName: 'hymnal',
     iconColor: '#842160',
   },
   {
     id: 'readings',
     title: 'Czytania',
-    subtitle: 'Czytania z Mszy dzisiejszej',
     iconName: 'readings',
     iconColor: '#D97706',
   },
   {
     id: 'prayer-book',
     title: 'Modlitewnik',
-    subtitle: 'Modlitwy codzienne',
     iconName: 'prayer-book',
     iconColor: '#16A34A',
   },
   {
     id: 'breviary',
     title: 'Brewiarz',
-    subtitle: 'Liturgia godzin',
     iconName: 'breviary',
     iconColor: '#2563EB',
   },

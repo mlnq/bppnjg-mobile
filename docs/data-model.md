@@ -346,6 +346,6 @@ To rozróżnia:
 
 ## Plik źródłowy typów
 
-Implementacja TypeScript tego modelu znajduje się w:
+Aktualne typy runtime dla trasy znajdują się w:
 
-- `features/@app-core/models/pilgrimageDataModel.ts`
+- `features/@app-core/constants/pilgrimageRoute.types.ts`

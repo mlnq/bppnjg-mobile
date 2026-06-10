@@ -19,39 +19,45 @@ export function PilgrimageScheduleTimeline({
   accentColor,
   timelineColor,
 }: PilgrimageScheduleTimelineProps) {
-  const markerSize = isCurrentStop ? 56 : 44;
+  const inactiveTimelineColor = colors.surfaceContainerHigh;
+  const inactiveMarkerColor = colors.onSurfaceVariant;
+  const activeMarkerBackground = colors.surfaceContainerLowest;
+  const activeMarkerBorder = colors.outlineVariant;
+  const markerSize = isCurrentStop ? 44 : 22;
   const markerStyle = isCurrentStop
     ? {
         width: markerSize,
         height: markerSize,
-        backgroundColor: colors.surfaceContainerLowest,
-        borderColor: colors.surfaceContainerLowest,
-        borderWidth: 0,
+        backgroundColor: activeMarkerBackground,
+        borderColor: activeMarkerBorder,
+        borderWidth: 1,
         shadowColor: accentColor,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.28,
-        shadowRadius: 12,
-        elevation: 6,
+        shadowOpacity: 0.12,
+        shadowRadius: 10,
+        elevation: 4,
       }
     : {
         width: markerSize,
         height: markerSize,
-        backgroundColor: '#ffffff',
-        borderColor: '#F2C8DA',
-        borderWidth: 3,
+        backgroundColor: colors.surfaceContainerLowest,
+        borderColor: inactiveTimelineColor,
+        borderWidth: 2,
       };
 
   return (
-    <View className="w-[54px] items-center">
+    <View className="w-[40px] items-center">
       <View
         className="absolute bottom-[-18px] top-0 w-[3px]"
-        style={{ backgroundColor: '#F2C8DA' }}
+        style={{ backgroundColor: inactiveTimelineColor }}
       />
-      <View className="z-[1] mt-[12px] items-center justify-center rounded-full" style={markerStyle}>
+      <View
+        className="z-[1] mt-[18px] items-center justify-center rounded-full"
+        style={markerStyle}>
         {isCurrentStop ? (
-          <Footprints size={26} color={accentColor} strokeWidth={2.1} />
+          <Footprints size={20} color={accentColor} strokeWidth={2.5} />
         ) : (
-          <MapPinned size={22} color={accentColor} strokeWidth={2.1} />
+         null
         )}
       </View>
     </View>
