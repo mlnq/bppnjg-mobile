@@ -26,4 +26,5 @@ android
 .metro-health-check*
 bppnjg-89cf0-firebase-adminsdk-fbsvc-f9e2f85333.json
 google-services-account.json
-bppnjg-89cf0-firebase-adminsdk-fbsvc-f9e2f85333.json
+config/GoogleService-Info.plist
+config/google-services.json

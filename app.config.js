@@ -50,12 +50,12 @@ module.exports = () => {
     ios: {
       ...appJson.expo.ios,
       bundleIdentifier: variantConfig.appId,
-      googleServicesFile: enableFirebase ? './GoogleService-Info.plist' : undefined,
+      googleServicesFile: enableFirebase ? './config/GoogleService-Info.plist' : undefined,
     },
     android: {
       ...appJson.expo.android,
       package: variantConfig.appId,
-      googleServicesFile: enableFirebase ? './google-services.json' : undefined,
+      googleServicesFile: enableFirebase ? './config/google-services.json' : undefined,
     },
     extra: {
       ...appJson.expo.extra,
