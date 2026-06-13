@@ -11,7 +11,7 @@ export function SettingsButton() {
       accessibilityLabel="Ustawienia"
       accessibilityRole="button"
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 4 }}
-      onPress={() => router.push('/(main)/settings')}
+      onPress={() => router.push('/settings')}
       style={({ pressed }) => [styles.button, pressed ? styles.buttonPressed : null]}>
       <SettingsIcon size={22} color={colors.onSurface} />
     </Pressable>
