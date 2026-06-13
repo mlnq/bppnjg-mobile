@@ -7,10 +7,10 @@ import {
   PrayerIcon,
   RouteIcon,
   pilgrimageRouteTheme,
-} from '../../../packages/@app-ui';
-import { type AppTab } from '../routes/appTabs';
-import { useNotificationsBadge } from '../hooks/useNotificationsBadge';
-import { useGetPilgrimageNotificationsQuery } from '../services/notificationsApi';
+} from '../../../../packages/@app-ui';
+import { type AppTab } from '../../routes/appTabs';
+import { useNotificationsBadge } from '../../hooks/useNotificationsBadge';
+import { useGetPilgrimageNotificationsQuery } from '../../services/notificationsApi';
 
 const { colors, typography } = pilgrimageRouteTheme;
 const INACTIVE_TAB_COLOR = colors.onSurfaceVariant;
@@ -58,7 +58,7 @@ export function PilgrimageBottomNav({ activeTab, onTabChange }: PilgrimageBottom
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 flex-row items-center justify-around rounded-t-[22px] border-t px-[10px] pt-2"
+      className="flex-row items-center justify-around rounded-t-[22px] border-t px-[10px] pt-2"
       style={{
         minHeight: BOTTOM_NAV_HEIGHT + insets.bottom,
         paddingBottom: Math.max(insets.bottom, 12),
