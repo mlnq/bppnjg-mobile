@@ -1,59 +1,48 @@
-import type {
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
-
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { HeaderBackButton } from './HeaderBackButton';
-import { SettingsButton } from './SettingsButton';
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { pilgrimageRouteTheme } from 'packages/@app-ui';
+import { HeaderBackButton } from '../HeaderBackButton';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
+export const sharedHeaderStyles: NativeStackNavigationOptions = {
+  headerBackVisible: false,
+  headerShadowVisible: false,
+  headerTransparent: false,
+  headerStyle: {
+    backgroundColor: '#fcfaf7',
+  },
+  headerTitleStyle: {
+    color: colors.onSurface,
+    fontFamily: typography.fontFamily,
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  headerTintColor: colors.onSurface,
+  headerTitleAlign: 'center',
+};
+
 type PilgrimageStackScreenOptionsConfig = {
   hideBackRoutes?: ReadonlySet<string>;
-  showSettingsRoutes?: ReadonlySet<string>;
 };
 
 export function getPilgrimageStackScreenOptions({
   hideBackRoutes = new Set<string>(),
-  showSettingsRoutes,
 }: PilgrimageStackScreenOptionsConfig = {}) {
   return ({
     route,
     navigation,
   }: {
-    route: {
-      name: string;
-    };
-    navigation: {
-      canGoBack: () => boolean;
-      goBack: () => void;
-    };
+    route: { name: string };
+    navigation: { canGoBack: () => boolean; goBack: () => void };
   }): NativeStackNavigationOptions => {
-    const hideBackAction = hideBackRoutes.has(route.name);
-    const showSettingsAction = showSettingsRoutes?.has(route.name) ?? false;
-    const showBackButton = !hideBackAction && navigation.canGoBack();
-    const headerRight = showSettingsAction ? () => <SettingsButton /> : undefined;
+    const showBackButton = !hideBackRoutes.has(route.name) && navigation.canGoBack();
     const headerLeft = showBackButton
       ? () => <HeaderBackButton onPress={() => navigation.goBack()} />
       : undefined;
 
     return {
-      headerBackVisible: false,
-      headerShadowVisible: false,
-      headerTransparent: false,
-      headerStyle: {
-        backgroundColor: '#fcfaf7',
-      },
-      headerTitleStyle: {
-        color: colors.onSurface,
-        fontFamily: typography.fontFamily,
-        fontSize: 24,
-        fontWeight: '700',
-      },
-      headerTintColor: colors.onSurface,
-      headerTitleAlign: 'center',
+      ...sharedHeaderStyles,
       headerLeft,
-      headerRight,
     };
   };
 }

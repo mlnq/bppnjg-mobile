@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Stack, usePathname, useRouter } from 'expo-router';
 
 import { AppShell } from '../../features/@app-core/components/AppShell';
-import { getPilgrimageStackScreenOptions } from '../../features/@app-core/components/getPilgrimageStackScreenOptions';
+import { getPilgrimageStackScreenOptions } from '../../features/@app-core/components/pilgrimage/getStackScreenOptions';
 import type { AppTab } from '../../features/@app-core/routes/appTabs';
 import {
   prefetchPilgrimageHomeData,
@@ -10,7 +10,6 @@ import {
 } from '../../features/@app-core/services/pilgrimageDataRefresh';
 
 const BACK_HIDDEN_ROUTES = new Set<string>(['index', 'route', 'news']);
-const SETTINGS_VISIBLE_ROUTES = new Set<string>(['index']);
 
 function getActiveTab(pathname: string): AppTab | undefined {
   if (pathname.startsWith('/prayer')) {
@@ -41,7 +40,6 @@ export default function MainLayout() {
   const activeTab = getActiveTab(pathname);
   const stackScreenOptions = getPilgrimageStackScreenOptions({
     hideBackRoutes: BACK_HIDDEN_ROUTES,
-    showSettingsRoutes: SETTINGS_VISIBLE_ROUTES,
   });
 
   useEffect(() => {
