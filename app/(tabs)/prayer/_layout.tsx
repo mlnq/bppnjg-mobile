@@ -1,25 +1,26 @@
 import { Stack } from 'expo-router';
 
-import { getPilgrimageStackScreenOptions } from '../../../features/@app-core/components/pilgrimage/getStackScreenOptions';
+import { SettingsButton } from '../../../features/@app-core/components/SettingsButton';
+import { HeaderBackButton } from '../../../features/@app-core/components/HeaderBackButton';
+import { sharedHeaderStyles } from '../../../features/@app-core/components/pilgrimage/getStackScreenOptions';
 
 export default function PrayerLayout() {
-  const stackScreenOptions = getPilgrimageStackScreenOptions({
-    hideBackRoutes: new Set<string>(['index']),
-  });
-
   return (
     <Stack
-      screenOptions={(props) => ({
-        ...stackScreenOptions(props),
+      screenOptions={({ route, navigation }) => ({
+        ...sharedHeaderStyles,
+        headerRight: route.name === 'index' ? () => <SettingsButton /> : undefined,
+        headerLeft:
+          navigation.canGoBack()
+            ? () => <HeaderBackButton onPress={() => navigation.goBack()} />
+            : undefined,
         gestureEnabled: true,
         fullScreenGestureEnabled: false,
       })}>
-      <Stack.Screen
-        name="book"
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="index" options={{ title: 'Niezbędnik' }} />
+      <Stack.Screen name="breviary" options={{ title: 'Brewiarz' }} />
+      <Stack.Screen name="readings" options={{ title: 'Czytania z Mszy' }} />
+      <Stack.Screen name="book" options={{ headerShown: false }} />
     </Stack>
   );
 }
