@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { PilgrimageQuartermasterScreen } from '../../features/@app-core/features/quartermaster/screens/PilgrimageQuartermasterScreen';
+import { PilgrimageQuartermasterScreen } from '../../features/@app-core/features/quartermaster/screens/QuartermasterScreen';
 
 export default function QuartermasterRoute() {
   return (

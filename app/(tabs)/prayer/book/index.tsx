@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { PilgrimagePrayerBookScreen } from '../../../../features/@app-core/features/prayer/screens/PilgrimagePrayerBookScreen';
+import { PilgrimagePrayerBookScreen } from '../../../../features/@app-core/features/prayer/screens/PrayerBookScreen';
 
 export default function PrayerBookRoute() {
   return (

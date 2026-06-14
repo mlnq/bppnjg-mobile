@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Stack, useRouter } from 'expo-router';
 
-import { PilgrimagePrayerScreen } from '../../../features/@app-core/features/prayer/screens/PilgrimagePrayerScreen';
+import { PilgrimagePrayerScreen } from '../../../features/@app-core/features/prayer/screens/PrayerScreen';
 
 export default function PrayerRoute() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { getPilgrimageStackScreenOptions } from '../../../../features/@app-core/components/getPilgrimageStackScreenOptions';
+import { getPilgrimageStackScreenOptions } from '../../../../features/@app-core/components/pilgrimage/getStackScreenOptions';
 
 export default function PrayerBookLayout() {
   const stackScreenOptions = getPilgrimageStackScreenOptions();

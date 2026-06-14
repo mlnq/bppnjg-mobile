@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { PilgrimageConferenceScreen } from '../../features/@app-core/features/conference/screens/PilgrimageConferenceScreen';
+import { PilgrimageConferenceScreen } from '../../features/@app-core/features/conference/screens/ConferenceScreen';
 
 export default function ConferenceRoute() {
   return (

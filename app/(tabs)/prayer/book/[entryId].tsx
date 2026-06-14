@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 
-import { PilgrimagePrayerBookEntryScreen } from '../../../../features/@app-core/features/prayer/screens/PilgrimagePrayerBookEntryScreen';
+import { PilgrimagePrayerBookEntryScreen } from '../../../../features/@app-core/features/prayer/screens/PrayerBookEntryScreen';
 import {
   getPrayerBookEntryById,
   type PrayerBookEntryId,

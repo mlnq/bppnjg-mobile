@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 
-import { PilgrimageHomeScreen } from '../../features/@app-core/features/home/screens/PilgrimageHomeScreen';
+import { PilgrimageHomeScreen } from '../../features/@app-core/features/home/screens/HomeScreen';
 
 export default function HomeRoute() {
   const router = useRouter();
