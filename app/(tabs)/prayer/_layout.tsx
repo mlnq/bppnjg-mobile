@@ -9,6 +9,7 @@ export default function PrayerLayout() {
     <Stack
       screenOptions={({ route, navigation }) => ({
         ...sharedHeaderStyles,
+        headerBackVisible: false,
         headerRight: route.name === 'index' ? () => <SettingsButton /> : undefined,
         headerLeft:
           navigation.canGoBack()
