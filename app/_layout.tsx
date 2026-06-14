@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { AppToastHost } from '../features/@app-core/components/AppToastHost';
+import { sharedHeaderStyles } from '../features/@app-core/components/pilgrimage/getStackScreenOptions';
 import { OFFICE_OPTIONS } from '../features/@app-core/features/breviary/helpers/pilgrimageBreviary.helpers';
 import { UserLocationProvider } from '../features/@app-core/hooks/useUserLocation';
 import { usePushNotifications } from '../features/@app-core/hooks/usePushNotifications';
@@ -37,7 +38,43 @@ function AppBootstrap() {
     <SafeAreaProvider>
       <UserLocationProvider>
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="settings"
+            options={{
+              ...sharedHeaderStyles,
+              headerShown: true,
+              title: 'Ustawienia',
+              headerRight: undefined,
+              animation: 'slide_from_right',
+              animationMatchesGesture: true,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="conference"
+            options={{
+              ...sharedHeaderStyles,
+              headerShown: true,
+              title: 'Konferencja',
+              animation: 'slide_from_right',
+              animationMatchesGesture: true,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="quartermaster"
+            options={{
+              ...sharedHeaderStyles,
+              headerShown: true,
+              title: 'Kwatermistrz',
+              animation: 'slide_from_right',
+              animationMatchesGesture: true,
+              gestureEnabled: true,
+            }}
+          />
+        </Stack>
         <AppToastHost />
       </UserLocationProvider>
     </SafeAreaProvider>
