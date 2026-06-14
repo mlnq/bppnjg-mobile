@@ -1,14 +1,14 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { AppLoader } from '../../../features/@app-core/components/AppLoader';
-import { AppScreenScrollView } from '../../../features/@app-core/components/AppScreenScrollView';
+import { pilgrimageRouteTheme } from '../../packages/@app-ui';
+import { AppLoader } from '../../features/@app-core/components/AppLoader';
+import { AppScreenScrollView } from '../../features/@app-core/components/AppScreenScrollView';
 import {
   type QuartermasterComment,
   useGetQuartermasterCommentsQuery,
-} from '../../../features/@app-core/services/quartermasterApi';
-import { formatDateTimeShort } from '../../../features/@app-core/utils/formatters/formatDateTime';
+} from '../../features/@app-core/services/quartermasterApi';
+import { formatDateTimeShort } from '../../features/@app-core/utils/formatters/formatDateTime';
 
 const { colors, radii, typography } = pilgrimageRouteTheme;
 const CARD_BORDER = '#e4dbd1';

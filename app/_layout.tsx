@@ -46,7 +46,6 @@ function AppBootstrap() {
               ...sharedHeaderStyles,
               headerShown: true,
               title: 'Ustawienia',
-              headerRight: undefined,
               animation: 'slide_from_right',
               animationMatchesGesture: true,
               gestureEnabled: true,
@@ -69,6 +68,16 @@ function AppBootstrap() {
               ...sharedHeaderStyles,
               headerShown: true,
               title: 'Kwatermistrz',
+              animation: 'slide_from_right',
+              animationMatchesGesture: true,
+              gestureEnabled: true,
+            }}
+          />
+          <Stack.Screen
+            name="quartermaster/[commentId]"
+            options={{
+              ...sharedHeaderStyles,
+              headerShown: true,
               animation: 'slide_from_right',
               animationMatchesGesture: true,
               gestureEnabled: true,
