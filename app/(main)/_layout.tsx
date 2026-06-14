@@ -133,7 +133,6 @@ export default function MainLayout() {
         <Stack.Screen
           name="settings"
           options={{
-            headerRight: undefined,
             animation: 'slide_from_right',
             animationMatchesGesture: true,
             gestureEnabled: true,

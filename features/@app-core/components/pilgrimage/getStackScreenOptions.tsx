@@ -1,5 +1,5 @@
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { pilgrimageRouteTheme } from 'packages/@app-ui';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
 import { HeaderBackButton } from '../HeaderBackButton';
 
 const { colors, typography } = pilgrimageRouteTheme;
