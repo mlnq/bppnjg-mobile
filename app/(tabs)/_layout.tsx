@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Tabs } from 'expo-router';
-import type { BottomTabBarProps, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { TabActions } from '@react-navigation/routers';
 
 import { SettingsButton } from '../../features/@app-core/components/SettingsButton';
 import { PilgrimageBottomNav } from '../../features/@app-core/components/pilgrimage/BottomNav';
@@ -35,7 +36,7 @@ function TabBarAdapter({ state, navigation }: BottomTabBarProps) {
       onTabChange={(tab) => {
         if (tab === 'home') prefetchPilgrimageHomeData(true);
         if (tab === 'info') prefetchPilgrimageNotifications();
-        navigation.navigate(TAB_TO_ROUTE[tab]);
+        navigation.dispatch(TabActions.jumpTo(TAB_TO_ROUTE[tab]));
       }}
     />
   );
@@ -50,7 +51,7 @@ export default function TabsLayout() {
     <Tabs
       tabBar={(props) => <TabBarAdapter {...props} />}
       screenOptions={{
-        ...(sharedHeaderStyles as BottomTabNavigationOptions),
+        ...sharedHeaderStyles,
         headerRight: () => <SettingsButton />,
       }}>
       <Tabs.Screen name="index" options={{ title: 'Start' }} />

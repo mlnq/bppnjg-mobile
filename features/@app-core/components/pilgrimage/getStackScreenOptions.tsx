@@ -4,8 +4,18 @@ import { HeaderBackButton } from '../HeaderBackButton';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
-export const sharedHeaderStyles: NativeStackNavigationOptions = {
-  headerBackVisible: false,
+// Properties shared between NativeStack and BottomTab navigators
+export type SharedHeaderOptions = Pick<
+  NativeStackNavigationOptions,
+  | 'headerShadowVisible'
+  | 'headerTransparent'
+  | 'headerStyle'
+  | 'headerTitleStyle'
+  | 'headerTintColor'
+  | 'headerTitleAlign'
+>;
+
+export const sharedHeaderStyles: SharedHeaderOptions = {
   headerShadowVisible: false,
   headerTransparent: false,
   headerStyle: {
@@ -42,6 +52,7 @@ export function getPilgrimageStackScreenOptions({
 
     return {
       ...sharedHeaderStyles,
+      headerBackVisible: false,
       headerLeft,
     };
   };
