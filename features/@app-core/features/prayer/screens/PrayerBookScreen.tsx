@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { pilgrimageRouteTheme, PrayerBookIcon } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme, PrayerBookIcon } from '../../../../../packages/@app-ui';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import {
   PRAYER_BOOK_ENTRIES,
@@ -18,7 +18,7 @@ export function PilgrimagePrayerBookScreen() {
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
 

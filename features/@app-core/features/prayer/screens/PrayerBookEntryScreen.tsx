@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import {
@@ -69,7 +69,7 @@ export function PilgrimagePrayerBookEntryScreen({
     return (
       <AppScreenScrollView
         className="flex-1"
-        style={{ backgroundColor: colors.surface }}
+        style={{ backgroundColor: AppColors.background }}
         contentContainerClassName="pt-6 pb-6"
         showsVerticalScrollIndicator={false}>
       
@@ -85,7 +85,7 @@ export function PilgrimagePrayerBookEntryScreen({
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
     

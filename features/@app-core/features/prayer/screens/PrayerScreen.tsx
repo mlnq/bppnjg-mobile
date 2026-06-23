@@ -5,9 +5,7 @@ import ChevronRight from 'lucide-react-native/dist/esm/icons/chevron-right.mjs';
 import Church from 'lucide-react-native/dist/esm/icons/church.mjs';
 import Music4 from 'lucide-react-native/dist/esm/icons/music-4.mjs';
 
-import {
-  pilgrimageRouteTheme,
-} from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import { DailyReadingCard } from '../components/DailyReadingCard';
@@ -53,7 +51,7 @@ export function PilgrimagePrayerScreen({
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: '#f3f5f8' }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-5 pb-8"
       showsVerticalScrollIndicator={false}>
       <View className="flex-row flex-wrap justify-between gap-y-5">
