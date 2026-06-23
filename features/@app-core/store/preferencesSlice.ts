@@ -6,12 +6,14 @@ export type PreferencesState = {
   routeLocationSource: LocationSource;
   isDevInfoVisible: boolean;
   isRouteFallbackModeEnabled: boolean;
+  devSimulatedDayNumber: number | null;
 };
 
 const initialState: PreferencesState = {
   routeLocationSource: 'auto',
   isDevInfoVisible: false,
   isRouteFallbackModeEnabled: false,
+  devSimulatedDayNumber: null,
 };
 
 const preferencesSlice = createSlice({
@@ -36,6 +38,9 @@ const preferencesSlice = createSlice({
     toggleRouteFallbackMode(state) {
       state.isRouteFallbackModeEnabled = !state.isRouteFallbackModeEnabled;
     },
+    setDevSimulatedDayNumber(state, action: PayloadAction<number | null>) {
+      state.devSimulatedDayNumber = action.payload;
+    },
   },
 });
 
@@ -46,6 +51,7 @@ export const {
   resetDevInfoVisibility,
   setRouteFallbackModeEnabled,
   toggleRouteFallbackMode,
+  setDevSimulatedDayNumber,
 } = preferencesSlice.actions;
 
 export const preferencesReducer = preferencesSlice.reducer;

@@ -10,7 +10,7 @@ import { PilgrimageQuartermasterSection } from '../../../components/pilgrimage/Q
 import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
 import {
   getCurrentPilgrimageDayFetchNumber,
-  getPilgrimageWindowState,
+  usePilgrimageWindowState,
 } from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
 import {
@@ -37,7 +37,7 @@ export function PilgrimageHomeScreen({
   onShowQuartermaster,
 }: PilgrimageHomeScreenProps) {
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
-  const windowState = getPilgrimageWindowState();
+  const windowState = usePilgrimageWindowState();
   const isActive = windowState === 'active';
   const { currentLocation, locationSource } = useUserLocation();
   const {

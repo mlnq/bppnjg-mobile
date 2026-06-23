@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 
 type PilgrimageDaySource = {
   totalDays: number;
@@ -25,6 +27,20 @@ export function getPilgrimageWindowState(date = new Date()): PilgrimageWindowSta
   if (dayNumber === PILGRIMAGE_DAY_BEFORE_START) return 'before';
   if (dayNumber === PILGRIMAGE_DAY_AFTER_END) return 'after';
   return 'active';
+}
+
+export function usePilgrimageWindowState(): PilgrimageWindowState {
+  const devDay = useSelector((state: RootState) => state.preferences.devSimulatedDayNumber);
+  if (devDay === null) return getPilgrimageWindowState();
+  if (devDay <= PILGRIMAGE_DAY_BEFORE_START) return 'before';
+  if (devDay >= PILGRIMAGE_DAY_AFTER_END) return 'after';
+  return 'active';
+}
+
+export function useEffectivePilgrimageDayNumber(): number {
+  const devDay = useSelector((state: RootState) => state.preferences.devSimulatedDayNumber);
+  if (devDay !== null) return devDay;
+  return getPilgrimageDayNumberFromDate();
 }
 
 export function getPilgrimageDayNumberFromDate(date = new Date()) {
