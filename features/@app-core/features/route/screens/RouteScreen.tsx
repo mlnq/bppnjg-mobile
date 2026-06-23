@@ -1,9 +1,9 @@
 import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
-import { PilgrimageRouteLocationInfoModal } from '../../../components/PilgrimageRouteLocationInfoModal';
+import { PilgrimageRouteLocationInfoModal } from '../../../components/pilgrimage/RouteLocationInfoModal';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { SCREEN_HORIZONTAL_PADDING_CLASS } from '../../../constants/layout';
 import { useCurrentTime } from '../../../hooks/useCurrentTime';
@@ -15,9 +15,9 @@ import {
   useGetPilgrimageDayQuery,
   useGetPilgrimageQuery,
 } from '../../../services/pilgrimageApi';
-import { PilgrimageDaySchedule } from '../components/PilgrimageDaySchedule';
-import { PilgrimageRouteHeroCard } from '../components/PilgrimageRouteHeroCard';
-import { PilgrimageRoutePositionBadge } from '../components/PilgrimageRoutePositionBadge';
+import { PilgrimageDaySchedule } from '../components/DaySchedule';
+import { PilgrimageRouteHeroCard } from '../components/RouteHeroCard';
+import { PilgrimageRoutePositionBadge } from '../components/RoutePositionBadge';
 import { getRouteLocationMeta } from '../helpers/pilgrimageRouteLocationMeta';
 
 const { colors, typography } = pilgrimageRouteTheme;
@@ -72,7 +72,7 @@ export function PilgrimageRouteScreen() {
     return (
       <View
         className={`flex-1 ${SCREEN_HORIZONTAL_PADDING_CLASS}`}
-        style={{ backgroundColor: colors.surface }}>
+        style={{ backgroundColor: AppColors.background }}>
         <AppLoader label="Pobieranie danych etapu z backendu..." minHeight={320} />
       </View>
     );
@@ -82,7 +82,7 @@ export function PilgrimageRouteScreen() {
     return (
       <AppScreenScrollView
         className="flex-1"
-        style={{ backgroundColor: colors.surface }}
+        style={{ backgroundColor: AppColors.background }}
         contentContainerClassName="pt-8 pb-6"
         refreshControl={
           <RefreshControl
@@ -124,7 +124,7 @@ export function PilgrimageRouteScreen() {
     <>
       <AppScreenScrollView
         className="flex-1"
-        style={{ backgroundColor: colors.surface }}
+        style={{ backgroundColor: AppColors.background }}
         contentContainerClassName="pt-2 pb-6"
         showsVerticalScrollIndicator={false}
         refreshControl={

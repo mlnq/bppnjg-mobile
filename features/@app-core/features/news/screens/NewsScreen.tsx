@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { clearStoredNotificationNewsItems } from '../../../services/localNotificationNews';
@@ -13,7 +13,7 @@ import {
   useGetPilgrimageNotificationsQuery,
 } from '../../../services/notificationsApi';
 import { store } from '../../../store/store';
-import { PilgrimageNewsCard } from '../components/PilgrimageNewsCard';
+import { PilgrimageNewsCard } from '../components/NewsCard';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
@@ -66,7 +66,7 @@ export function PilgrimageNewsScreen({
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
       <View className={'mb-2 flex-row items-center justify-between gap-3'}>

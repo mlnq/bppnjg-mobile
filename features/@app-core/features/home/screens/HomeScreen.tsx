@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { RefreshControl, Text } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
-import { PilgrimageRouteLocationInfoModal } from '../../../components/PilgrimageRouteLocationInfoModal';
+import { PilgrimageRouteLocationInfoModal } from '../../../components/pilgrimage/RouteLocationInfoModal';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
-import { PilgrimageConferenceCard } from '../../../components/PilgrimageConferenceCard';
-import { PilgrimageQuartermasterSection } from '../../../components/PilgrimageQuartermasterSection';
+import { PilgrimageConferenceCard } from '../../../components/pilgrimage/ConferenceCard';
+import { PilgrimageQuartermasterSection } from '../../../components/pilgrimage/QuartermasterSection';
 import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
 import { getCurrentPilgrimageDayFetchNumber } from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
@@ -17,8 +17,8 @@ import {
 } from '../../../services/pilgrimageApi';
 import { formatDistanceKm } from '../../../utils/formatters/formatDistanceKm';
 import { getRemainingDistanceFromCurrentLocation } from '../../../utils/pilgrimageCurrentLocation';
-import { PilgrimageWeatherCard } from '../components/PilgrimageWeatherCard';
-import { PilgrimageHomeHeroCard } from '../components/PilgrimageHomeHeroCard';
+import { PilgrimageWeatherCard } from '../components/WeatherCard';
+import { PilgrimageHomeHeroCard } from '../components/HomeHeroCard';
 import { getPilgrimageRouteLabels } from '../../route/helpers/pilgrimageRouteLabels';
 import { getRouteLocationMeta } from '../../route/helpers/pilgrimageRouteLocationMeta';
 
@@ -91,7 +91,7 @@ export function PilgrimageHomeScreen({
     <>
       <AppScreenScrollView
         className="flex-1"
-        style={{ backgroundColor: colors.surface }}
+        style={{ backgroundColor: AppColors.background }}
         contentContainerClassName="pt-2 pb-6"
         showsVerticalScrollIndicator={false}
         refreshControl={
