@@ -8,7 +8,10 @@ import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { PilgrimageConferenceCard } from '../../../components/pilgrimage/ConferenceCard';
 import { PilgrimageQuartermasterSection } from '../../../components/pilgrimage/QuartermasterSection';
 import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
-import { getCurrentPilgrimageDayFetchNumber } from '../../../hooks/useSelectedPilgrimageDay';
+import {
+  getCurrentPilgrimageDayFetchNumber,
+  getPilgrimageWindowState,
+} from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
 import {
   PILGRIMAGE_YEAR,
@@ -34,12 +37,14 @@ export function PilgrimageHomeScreen({
   onShowQuartermaster,
 }: PilgrimageHomeScreenProps) {
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+  const windowState = getPilgrimageWindowState();
+  const isActive = windowState === 'active';
   const { currentLocation, locationSource } = useUserLocation();
   const {
     data: pilgrimage,
     isLoading: isPilgrimageLoading,
     isFetching: isPilgrimageFetching,
-  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR);
+  } = useGetPilgrimageQuery(PILGRIMAGE_YEAR, { skip: !isActive });
   const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
   const {
     data: pilgrimageDay,
@@ -56,8 +61,8 @@ export function PilgrimageHomeScreen({
     }
   );
   const { isRefreshing: isManualRefreshing, refresh: handleRefresh } = usePilgrimageRefresh({
-    includeNotifications: true,
-    includeQuartermaster: true,
+    includeNotifications: isActive,
+    includeQuartermaster: isActive,
     additionalRefreshTasks:
       currentDayFetchNumber !== null ? [() => refetchCurrentDay()] : [],
   });
@@ -86,6 +91,48 @@ export function PilgrimageHomeScreen({
         locationSource,
       })
     : null;
+
+  if (windowState === 'before') {
+    return (
+      <AppScreenScrollView
+        className="flex-1"
+        style={{ backgroundColor: AppColors.background }}
+        contentContainerClassName="pt-8 pb-6"
+        showsVerticalScrollIndicator={false}>
+        <Text
+          className="text-[22px] font-bold"
+          style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+          Pielgrzymka jeszcze się nie rozpoczęła
+        </Text>
+        <Text
+          className="mt-3 text-[16px] leading-7"
+          style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+          Niedługo zaczynamy! Wróć 30 lipca.
+        </Text>
+      </AppScreenScrollView>
+    );
+  }
+
+  if (windowState === 'after') {
+    return (
+      <AppScreenScrollView
+        className="flex-1"
+        style={{ backgroundColor: AppColors.background }}
+        contentContainerClassName="pt-8 pb-6"
+        showsVerticalScrollIndicator={false}>
+        <Text
+          className="text-[22px] font-bold"
+          style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+          Pielgrzymka dobiegła końca
+        </Text>
+        <Text
+          className="mt-3 text-[16px] leading-7"
+          style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+          Dziękujemy za wspólną drogę. Do zobaczenia za rok!
+        </Text>
+      </AppScreenScrollView>
+    );
+  }
 
   return (
     <>
@@ -140,3 +187,4 @@ export function PilgrimageHomeScreen({
     </>
   );
 }
+

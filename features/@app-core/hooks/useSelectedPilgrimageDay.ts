@@ -18,6 +18,15 @@ function normalizeDate(value: Date) {
   return normalized;
 }
 
+export type PilgrimageWindowState = 'before' | 'active' | 'after';
+
+export function getPilgrimageWindowState(date = new Date()): PilgrimageWindowState {
+  const dayNumber = getPilgrimageDayNumberFromDate(date);
+  if (dayNumber === PILGRIMAGE_DAY_BEFORE_START) return 'before';
+  if (dayNumber === PILGRIMAGE_DAY_AFTER_END) return 'after';
+  return 'active';
+}
+
 export function getPilgrimageDayNumberFromDate(date = new Date()) {
   const year = date.getFullYear();
   const currentDate = normalizeDate(date);
