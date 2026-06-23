@@ -1,10 +1,9 @@
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../packages/@app-ui';
 import { HeaderBackButton } from '../HeaderBackButton';
 
-const { colors, typography } = pilgrimageRouteTheme;
+const { typography } = pilgrimageRouteTheme;
 
-// Properties shared between NativeStack and BottomTab navigators
 export type SharedHeaderOptions = Pick<
   NativeStackNavigationOptions,
   | 'headerShadowVisible'
@@ -19,15 +18,15 @@ export const sharedHeaderStyles: SharedHeaderOptions = {
   headerShadowVisible: false,
   headerTransparent: false,
   headerStyle: {
-    backgroundColor: '#fcfaf7',
+    backgroundColor: AppColors.background,
   },
   headerTitleStyle: {
-    color: colors.onSurface,
+    color: AppColors.onBackground,
     fontFamily: typography.fontFamily,
     fontSize: 24,
     fontWeight: '700',
   },
-  headerTintColor: colors.onSurface,
+  headerTintColor: AppColors.onBackground,
   headerTitleAlign: 'center',
 };
 
