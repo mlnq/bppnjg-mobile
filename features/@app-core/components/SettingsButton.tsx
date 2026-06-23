@@ -20,7 +20,7 @@ export function SettingsButton() {
 
 const styles = StyleSheet.create({
   button: {
-    marginRight: 4,
+    marginRight: 12,
     height: 44,
     width: 44,
     alignItems: 'center',

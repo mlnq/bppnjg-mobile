@@ -53,7 +53,6 @@ export default function TabsLayout() {
       screenOptions={{
         ...sharedHeaderStyles,
         headerRight: () => <SettingsButton />,
-        headerRightContainerStyle: { paddingRight: 8 },
       }}>
       <Tabs.Screen name="index" options={{ title: 'Start' }} />
       <Tabs.Screen name="route" options={{ title: 'Trasa' }} />

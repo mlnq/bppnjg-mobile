@@ -19,7 +19,7 @@ export function HeaderBackButton({ onPress }: { onPress: () => void }) {
 
 const styles = StyleSheet.create({
   button: {
-    marginLeft: 4,
+    marginLeft: 12,
     height: 44,
     width: 44,
     alignItems: 'center',
