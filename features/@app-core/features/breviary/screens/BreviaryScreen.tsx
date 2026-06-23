@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { useCompactStyles } from '../../../hooks/useCompactStyles';
 import {
@@ -33,7 +33,7 @@ export function PilgrimageBreviaryScreen() {
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
     

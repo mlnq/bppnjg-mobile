@@ -3,7 +3,7 @@ import { Alert, Linking, Text, TouchableOpacity } from 'react-native';
 import * as Location from 'expo-location';
 import { useDispatch } from 'react-redux';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { Card, CardButton } from '../../../components/Card';
 import { DevInfoCard } from '../../../components/DevInfoCard';
@@ -107,7 +107,7 @@ export function PilgrimageSettingsScreen() {
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
       <Text

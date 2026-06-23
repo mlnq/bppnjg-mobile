@@ -1,14 +1,14 @@
 import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import {
   type QuartermasterComment,
   useGetQuartermasterCommentsQuery,
 } from '../../../services/quartermasterApi';
-import { PilgrimageQuartermasterCard } from '../components/PilgrimageQuartermasterCard';
+import { PilgrimageQuartermasterCard } from '../components/QuartermasterCard';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
@@ -24,7 +24,7 @@ export function PilgrimageQuartermasterScreen() {
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-5 pb-6"
       showsVerticalScrollIndicator={false}>
       <Text

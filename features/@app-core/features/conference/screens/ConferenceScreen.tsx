@@ -1,7 +1,7 @@
 import Markdown from 'react-native-markdown-display';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
+import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
 import { AppScreenScrollView } from '../../../components/AppScreenScrollView';
 import { getCurrentPilgrimageDayFetchNumber } from '../../../hooks/useSelectedPilgrimageDay';
@@ -165,7 +165,7 @@ export function PilgrimageConferenceScreen() {
   return (
     <AppScreenScrollView
       className="flex-1"
-      style={{ backgroundColor: colors.surface }}
+      style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
       showsVerticalScrollIndicator={false}>
   
