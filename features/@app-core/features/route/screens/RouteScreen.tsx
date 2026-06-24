@@ -1,5 +1,8 @@
 import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
+import ChevronLeft from 'lucide-react-native/dist/esm/icons/chevron-left.mjs';
+import ChevronRight from 'lucide-react-native/dist/esm/icons/chevron-right.mjs';
+import Route from 'lucide-react-native/dist/esm/icons/route.mjs';
 
 import { AppColors, pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import { AppLoader } from '../../../components/AppLoader';
@@ -17,13 +20,13 @@ import {
 } from '../../../services/pilgrimageApi';
 import { PilgrimageDaySchedule } from '../components/DaySchedule';
 import { PilgrimageRouteHeroCard } from '../components/RouteHeroCard';
-import { PilgrimageRoutePositionBadge } from '../components/RoutePositionBadge';
 import { getRouteLocationMeta } from '../helpers/pilgrimageRouteLocationMeta';
+import { getPilgrimageRouteLabels } from '../helpers/pilgrimageRouteLabels';
 
 const { colors, typography } = pilgrimageRouteTheme;
-const ROUTE_CHIP_BACKGROUND = colors.surfaceContainerLowest;
-const ROUTE_CHIP_BORDER = colors.primaryContainer;
-const ROUTE_CHIP_TEXT = colors.primary;
+const NAV_BUTTON_BORDER = colors.outlineVariant;
+const BANNER_BACKGROUND = colors.surfaceContainerLowest;
+const BANNER_BORDER = colors.primaryContainer;
 
 export function PilgrimageRouteScreen() {
   const { currentLocation, locationSource } = useUserLocation();
@@ -106,9 +109,9 @@ export function PilgrimageRouteScreen() {
     currentDayFetchNumber !== null && activeDay.dayNumber === currentDayFetchNumber;
   const canShowPreviousDay = activeDay.dayNumber > 1;
   const canShowNextDay = activeDay.dayNumber < pilgrimage.totalDays;
+  const { startLabel, endLabel } = getPilgrimageRouteLabels(activeDay);
 
   const {
-    currentRouteLocation,
     scheduleSourceLabel,
     isScheduleEstimated,
     isForcedTimeMode,
@@ -120,90 +123,123 @@ export function PilgrimageRouteScreen() {
     now,
   });
 
+  const gpsBannerText = isCurrentDay && isScheduleEstimated
+    ? isForcedTimeMode
+      ? 'Tryb godzinowy — pozycja według harmonogramu'
+      : 'GPS wyłączony — pokazujemy pozycję według harmonogramu'
+    : null;
+
   return (
     <>
-      <AppScreenScrollView
-        className="flex-1"
-        style={{ backgroundColor: AppColors.background }}
-        contentContainerClassName="pt-2 pb-6"
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isManualRefreshing}
-            onRefresh={() => {
-              void handleRefresh();
-            }}
-            tintColor={colors.primary}
-          />
-        }>
-        {isCurrentDay ? (
-          <PilgrimageRoutePositionBadge
-            label={
-              currentRouteLocation.source === 'gps' ? 'Lokalizacja wg GPS' : 'Według harmonogramu'
-            }
-            onPress={() => {
-              setIsInfoModalVisible(true);
-            }}
-          />
-        ) : null}
-        {isCurrentDay && isScheduleEstimated ? (
-          <View
-            className="mt-3 self-start rounded-full border px-4 py-3"
-            style={{ backgroundColor: ROUTE_CHIP_BACKGROUND, borderColor: ROUTE_CHIP_BORDER }}>
+      <View className="flex-1" style={{ backgroundColor: AppColors.background }}>
+        <View
+          className={`flex-row items-center px-5 py-3`}
+          style={{ backgroundColor: AppColors.background }}>
+          {canShowPreviousDay ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setSelectedDayNumber(activeDay.dayNumber - 1)}
+              className="h-[44px] w-[44px] items-center justify-center rounded-full border"
+              style={{
+                backgroundColor: colors.surfaceContainerLowest,
+                borderColor: NAV_BUTTON_BORDER,
+              }}>
+              <ChevronLeft size={18} color={colors.onSurface} strokeWidth={2.1} />
+            </TouchableOpacity>
+          ) : (
+            <View className="h-[44px] w-[44px]" />
+          )}
+
+          <View className="flex-1 items-center">
             <Text
-              className="text-[12px] font-bold uppercase tracking-[0.8px]"
-              style={{ color: ROUTE_CHIP_TEXT, fontFamily: typography.fontFamily }}>
-              {isForcedTimeMode
-                ? 'Tryb godzinowy włączony. Pokazujemy pozycję według harmonogramu.'
-                : 'GPS wyłączony. Pokazujemy pozycję według harmonogramu.'}
+              className="text-[17px] font-bold"
+              style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+              Dzień {activeDay.dayNumber} z {pilgrimage.totalDays}
+            </Text>
+            <Text
+              className="mt-[2px] text-[13px]"
+              style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+              {startLabel} → {endLabel}
             </Text>
           </View>
-        ) : null}
-        {!isCurrentDay ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              resetToCurrentDay();
-            }}
-            className="mt-3 self-start rounded-full border px-4 py-3"
-            style={{ backgroundColor: ROUTE_CHIP_BACKGROUND, borderColor: ROUTE_CHIP_BORDER }}>
+
+          {canShowNextDay ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setSelectedDayNumber(activeDay.dayNumber + 1)}
+              className="h-[44px] w-[44px] items-center justify-center rounded-full border"
+              style={{
+                backgroundColor: colors.surfaceContainerLowest,
+                borderColor: NAV_BUTTON_BORDER,
+              }}>
+              <ChevronRight size={18} color={colors.onSurface} strokeWidth={2.1} />
+            </TouchableOpacity>
+          ) : (
+            <View className="h-[44px] w-[44px]" />
+          )}
+        </View>
+
+        <AppScreenScrollView
+          className="flex-1"
+          style={{ backgroundColor: AppColors.background }}
+          contentContainerClassName="pb-6"
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isManualRefreshing}
+              onRefresh={() => {
+                void handleRefresh();
+              }}
+              tintColor={colors.primary}
+            />
+          }>
+          {gpsBannerText ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setIsInfoModalVisible(true)}
+              className="mb-3 flex-row items-center rounded-2xl border px-4 py-3"
+              style={{ backgroundColor: BANNER_BACKGROUND, borderColor: BANNER_BORDER }}>
+              <Route size={16} color={colors.primary} strokeWidth={2} />
+              <Text
+                className="ml-3 flex-1 text-[11px] font-bold uppercase tracking-[0.7px]"
+                style={{ color: colors.primary, fontFamily: typography.fontFamily }}>
+                {gpsBannerText}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
+          {!isCurrentDay ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => resetToCurrentDay()}
+              className="mb-3 flex-row items-center justify-center rounded-2xl px-4 py-3"
+              style={{ backgroundColor: colors.primary }}>
+              <Text
+                className="text-[11px] font-bold uppercase tracking-[0.7px]"
+                style={{ color: colors.onPrimary, fontFamily: typography.fontFamily }}>
+                Powrót do bieżącego dnia
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
+          <PilgrimageRouteHeroCard
+            day={activeDay}
+            totalDays={pilgrimage.totalDays}
+            now={now}
+            isCurrentDay={isCurrentDay}
+          />
+
+          {isPilgrimageError || isDayError ? (
             <Text
-              className="text-[12px] font-bold uppercase tracking-[0.8px]"
-              style={{ color: ROUTE_CHIP_TEXT, fontFamily: typography.fontFamily }}>
-              Powrót do bieżącego dnia
+              className="mt-4 text-[12px] font-medium uppercase tracking-[0.8px]"
+              style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+              Wyświetlane są ostatnio zapisane dane.
             </Text>
-          </TouchableOpacity>
-        ) : null}
-        <PilgrimageRouteHeroCard
-          day={activeDay}
-          totalDays={pilgrimage.totalDays}
-          now={now}
-          onOpenInfo={() => {
-            setIsInfoModalVisible(true);
-          }}
-          isCurrentDay={isCurrentDay}
-          canShowPreviousDay={canShowPreviousDay}
-          canShowNextDay={canShowNextDay}
-          onShowPreviousDay={() => {
-            if (canShowPreviousDay) {
-              setSelectedDayNumber(activeDay.dayNumber - 1);
-            }
-          }}
-          onShowNextDay={() => {
-            if (canShowNextDay) {
-              setSelectedDayNumber(activeDay.dayNumber + 1);
-            }
-          }}
-        />
-        {isPilgrimageError || isDayError ? (
-          <Text
-            className="mt-4 text-[12px] font-medium uppercase tracking-[0.8px]"
-            style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
-            Wyświetlane są ostatnio zapisane dane.
-          </Text>
-        ) : null}
-        <PilgrimageDaySchedule day={activeDay} isCurrentDay={isCurrentDay} now={now} />
-      </AppScreenScrollView>
+          ) : null}
+
+          <PilgrimageDaySchedule day={activeDay} isCurrentDay={isCurrentDay} now={now} />
+        </AppScreenScrollView>
+      </View>
 
       <PilgrimageRouteLocationInfoModal
         visible={isInfoModalVisible}

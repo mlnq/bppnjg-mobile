@@ -224,73 +224,70 @@ export function PilgrimageSettingsScreen() {
         </Text>
       </CardButton>
 
-      {devInfoVisibility.isEnabled ? (
-        <>
-          <Card className="mb-4 rounded-[24px] px-4 py-4">
+      <Card className="mb-4 rounded-[24px] px-4 py-4">
+        <Text
+          className="text-[12px] font-bold uppercase tracking-[0.8px]"
+          style={{ color: '#b00020', fontFamily: typography.fontFamily }}>
+          DEV · Symulator dnia
+        </Text>
+        <Text
+          className="mt-2 text-[15px] font-semibold"
+          style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+          {devDayLabel(devSimulatedDay)}
+        </Text>
+        <Text
+          className="mb-4 mt-1 text-[13px]"
+          style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
+          {devSimulatedDay === null
+            ? 'Używana jest prawdziwa data urządzenia.'
+            : 'Nadpisana ręcznie. Reset → prawdziwa data.'}
+        </Text>
+        <TouchableOpacity
+          className="flex-row items-center gap-3"
+          activeOpacity={1}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              const current = devSimulatedDay ?? DEV_DAY_MIN;
+              dispatch(setDevSimulatedDayNumber(Math.max(DEV_DAY_MIN, current - 1)));
+            }}
+            className="h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.surfaceContainerHigh }}>
+            <Text
+              className="text-[20px] font-bold"
+              style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+              −
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              const current = devSimulatedDay ?? DEV_DAY_MIN;
+              dispatch(setDevSimulatedDayNumber(Math.min(DEV_DAY_MAX, current + 1)));
+            }}
+            className="h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.surfaceContainerHigh }}>
+            <Text
+              className="text-[20px] font-bold"
+              style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
+              +
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => dispatch(setDevSimulatedDayNumber(null))}
+            className="rounded-full px-4 py-2"
+            style={{ backgroundColor: '#fde8e8' }}>
             <Text
               className="text-[12px] font-bold uppercase tracking-[0.8px]"
               style={{ color: '#b00020', fontFamily: typography.fontFamily }}>
-              DEV · Symulator dnia
+              Reset
             </Text>
-            <Text
-              className="mt-2 text-[15px] font-semibold"
-              style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-              {devDayLabel(devSimulatedDay)}
-            </Text>
-            <Text
-              className="mb-4 mt-1 text-[13px]"
-              style={{ color: colors.onSurfaceVariant, fontFamily: typography.fontFamily }}>
-              {devSimulatedDay === null
-                ? 'Używana jest prawdziwa data urządzenia.'
-                : 'Nadpisana ręcznie. Reset → prawdziwa data.'}
-            </Text>
-            <TouchableOpacity
-              className="flex-row items-center gap-3"
-              activeOpacity={1}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  const current = devSimulatedDay ?? DEV_DAY_MIN;
-                  dispatch(setDevSimulatedDayNumber(Math.max(DEV_DAY_MIN, current - 1)));
-                }}
-                className="h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.surfaceContainerHigh }}>
-                <Text
-                  className="text-[20px] font-bold"
-                  style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-                  −
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  const current = devSimulatedDay ?? DEV_DAY_MIN;
-                  dispatch(setDevSimulatedDayNumber(Math.min(DEV_DAY_MAX, current + 1)));
-                }}
-                className="h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.surfaceContainerHigh }}>
-                <Text
-                  className="text-[20px] font-bold"
-                  style={{ color: colors.onSurface, fontFamily: typography.fontFamily }}>
-                  +
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => dispatch(setDevSimulatedDayNumber(null))}
-                className="rounded-full px-4 py-2"
-                style={{ backgroundColor: '#fde8e8' }}>
-                <Text
-                  className="text-[12px] font-bold uppercase tracking-[0.8px]"
-                  style={{ color: '#b00020', fontFamily: typography.fontFamily }}>
-                  Reset
-                </Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </Card>
-          <DevInfoCard onReset={handleResetDevOptions} />
-        </>
-      ) : null}
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Card>
+
+      {devInfoVisibility.isEnabled ? <DevInfoCard onReset={handleResetDevOptions} /> : null}
     </AppScreenScrollView>
   );
 }

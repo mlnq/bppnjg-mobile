@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native';
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import type { PilgrimageDayScheduleItem as PilgrimageDayScheduleItemModel } from '../../../constants/pilgrimageRoute';
-import {PilgrimageRoutePositionBadge} from "./PilgrimageRoutePositionBadge";
-import {PilgrimageScheduleSegmentBadge} from "./PilgrimageScheduleSegmentBadge";
+import {PilgrimageRoutePositionBadge} from "./RoutePositionBadge";
+import {PilgrimageScheduleSegmentBadge} from "./ScheduleSegmentBadge";
 import {formatDurationMinutes} from "../../../utils/formatters/formatDurationMinutes";
 import {Timer} from "lucide-react-native";
-import {PilgrimageTimeBadge} from "./PilgrimageTimeBadge";
+import {PilgrimageTimeBadge} from "./TimeBadge";
 
 
 const { colors, typography } = pilgrimageRouteTheme;

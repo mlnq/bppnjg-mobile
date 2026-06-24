@@ -4,8 +4,8 @@ import {
   type PilgrimageDayScheduleItem as PilgrimageDayScheduleItemModel,
 } from '../../../constants/pilgrimageRoute';
 import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
-import { PilgrimageScheduleCard } from './PilgrimageScheduleCard';
-import { PilgrimageScheduleTimeline } from './PilgrimageScheduleTimeline';
+import { PilgrimageScheduleCard } from './ScheduleCard';
+import { PilgrimageScheduleTimeline } from './ScheduleTimeline';
 
 const { colors } = pilgrimageRouteTheme;
 const SCHEDULE_TIMELINE = colors.outlineVariant;

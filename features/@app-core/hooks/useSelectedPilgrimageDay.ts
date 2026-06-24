@@ -90,17 +90,19 @@ function toFetchableDayNumber(dayNumber: number, totalDays: number) {
 
 export function useSelectedPilgrimageDay(data: PilgrimageDaySource) {
   const [selectedDayNumber, setSelectedDayNumber] = useState<number | null>(null);
-  const currentDayNumber = getCurrentPilgrimageDayNumber(data);
+  const devDay = useSelector((state: RootState) => state.preferences.devSimulatedDayNumber);
+  const rawDayNumber = devDay !== null ? devDay : getPilgrimageDayNumberFromDate();
+  const currentDayNumber = data ? rawDayNumber : null;
   const currentDayFetchNumber =
     data && currentDayNumber !== null
       ? toFetchableDayNumber(currentDayNumber, data.totalDays)
       : null;
 
   useEffect(() => {
-    if (currentDayFetchNumber && selectedDayNumber === null) {
+    if (currentDayFetchNumber) {
       setSelectedDayNumber(currentDayFetchNumber);
     }
-  }, [currentDayFetchNumber, selectedDayNumber]);
+  }, [currentDayFetchNumber]);
 
   return {
     currentDayNumber,

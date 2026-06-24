@@ -9,7 +9,7 @@ import { PilgrimageConferenceCard } from '../../../components/pilgrimage/Confere
 import { PilgrimageQuartermasterSection } from '../../../components/pilgrimage/QuartermasterSection';
 import { usePilgrimageRefresh } from '../../../hooks/usePilgrimageRefresh';
 import {
-  getCurrentPilgrimageDayFetchNumber,
+  useEffectivePilgrimageDayNumber,
   usePilgrimageWindowState,
 } from '../../../hooks/useSelectedPilgrimageDay';
 import { useUserLocation } from '../../../hooks/useUserLocation';
@@ -45,7 +45,10 @@ export function PilgrimageHomeScreen({
     isLoading: isPilgrimageLoading,
     isFetching: isPilgrimageFetching,
   } = useGetPilgrimageQuery(PILGRIMAGE_YEAR, { skip: !isActive });
-  const currentDayFetchNumber = getCurrentPilgrimageDayFetchNumber(pilgrimage?.totalDays);
+  const effectiveDayNumber = useEffectivePilgrimageDayNumber();
+  const currentDayFetchNumber = pilgrimage?.totalDays
+    ? Math.min(Math.max(effectiveDayNumber, 1), pilgrimage.totalDays)
+    : null;
   const {
     data: pilgrimageDay,
     isLoading: isDayLoading,

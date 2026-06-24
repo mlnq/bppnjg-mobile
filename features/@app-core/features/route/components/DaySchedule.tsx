@@ -4,8 +4,8 @@ import { pilgrimageRouteTheme } from '../../../../../packages/@app-ui';
 import type { PilgrimageDay } from '../../../constants/pilgrimageRoute';
 import { useUserLocation } from '../../../hooks/useUserLocation';
 import { getCurrentRouteLocation } from '../../../utils/pilgrimageCurrentLocation';
-import { PilgrimageDayScheduleItem } from './PilgrimageDayScheduleItem';
-import { PilgrimageScheduleSegmentBadge } from './PilgrimageScheduleSegmentBadge';
+import { PilgrimageDayScheduleItem } from './DayScheduleItem';
+import { PilgrimageScheduleSegmentBadge } from './ScheduleSegmentBadge';
 
 const { colors, typography } = pilgrimageRouteTheme;
 

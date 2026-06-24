@@ -37,7 +37,6 @@ type RouteParams = {
 // Constants
 
 const SCHEDULE_MATCH_RADIUS_KM = 2;
-const GPS_ROUTE_MATCH_RADIUS_KM = 2;
 const DISTANCE_ROUNDING_STEP_KM = 0.5;
 const DEFAULT_WALKING_SPEED_KMH = 4.5;
 const MIN_WALKING_SPEED_KMH = 3;
@@ -135,8 +134,7 @@ function getGpsProgress(
   currentLocation: LocationObjectCoords | null
 ): RouteProgress | null {
   if (!currentLocation) return null;
-  const progress = estimateRouteProgress(day, toCoords(currentLocation));
-  return progress && progress.distanceToPathKm <= GPS_ROUTE_MATCH_RADIUS_KM ? progress : null;
+  return estimateRouteProgress(day, toCoords(currentLocation));
 }
 
 // Schedule helpers
