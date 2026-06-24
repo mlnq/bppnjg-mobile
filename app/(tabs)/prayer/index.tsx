@@ -6,9 +6,9 @@ import { PilgrimagePrayerScreen } from '../../../features/@app-core/features/pra
 export default function PrayerRoute() {
   const router = useRouter();
 
-  const handleNavigateToBreviary = useCallback(() => router.push('/prayer/breviary'), [router]);
-  const handleNavigateToReadings = useCallback(() => router.push('/prayer/readings'), [router]);
-  const handleNavigateToPrayerBook = useCallback(() => router.push('/prayer/book'), [router]);
+  const handleNavigateToBreviary = useCallback(() => router.push('/breviary'), [router]);
+  const handleNavigateToReadings = useCallback(() => router.push('/readings'), [router]);
+  const handleNavigateToPrayerBook = useCallback(() => router.push('/prayer-book'), [router]);
 
   return (
     <PilgrimagePrayerScreen

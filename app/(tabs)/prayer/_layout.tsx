@@ -7,14 +7,8 @@ export default function PrayerLayout() {
     <Stack
       screenOptions={{
         ...sharedHeaderStyles,
-        headerBackTitle: '',
-        gestureEnabled: true,
-        fullScreenGestureEnabled: false,
       }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="breviary" options={{ title: 'Brewiarz' }} />
-      <Stack.Screen name="readings" options={{ title: 'Czytania z Mszy' }} />
-      <Stack.Screen name="book" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -71,7 +71,8 @@ export function PilgrimagePrayerBookEntryScreen({
         className="flex-1"
         style={{ backgroundColor: AppColors.background }}
         contentContainerClassName="pt-6 pb-6"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        withoutBottomNav>
       
         <Text
           className="text-[16px] leading-7"
@@ -87,7 +88,8 @@ export function PilgrimagePrayerBookEntryScreen({
       className="flex-1"
       style={{ backgroundColor: AppColors.background }}
       contentContainerClassName="pt-6 pb-6"
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+      withoutBottomNav>
     
       <Text
         className="text-[28px] font-bold"
