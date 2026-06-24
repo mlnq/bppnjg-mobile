@@ -1,14 +1,14 @@
 import { Text, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import type { PilgrimageDay } from '../constants/pilgrimageRoute';
-import { useCurrentTime } from '../hooks/useCurrentTime';
-import { useUserLocation } from '../hooks/useUserLocation';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import type { PilgrimageDay } from '../../constants/pilgrimageRoute';
+import { useCurrentTime } from '../../hooks/useCurrentTime';
+import { useUserLocation } from '../../hooks/useUserLocation';
 import {
   getCurrentRouteLocation,
   getRemainingDistanceFromCurrentLocation,
-} from '../utils/pilgrimageCurrentLocation';
-import { PilgrimageRemainingDistanceNote } from './PilgrimageRemainingDistanceNote';
+} from '../../utils/pilgrimageCurrentLocation';
+import { PilgrimageRemainingDistanceNote } from './RemainingDistanceNote';
 
 const { colors, radii, typography } = pilgrimageRouteTheme;
 

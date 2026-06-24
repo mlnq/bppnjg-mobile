@@ -1,7 +1,7 @@
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { SCREEN_HORIZONTAL_PADDING_CLASS } from '../constants/layout';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import { SCREEN_HORIZONTAL_PADDING_CLASS } from '../../constants/layout';
 
 const { colors, typography } = pilgrimageRouteTheme;
 

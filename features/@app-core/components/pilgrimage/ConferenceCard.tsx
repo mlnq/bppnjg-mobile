@@ -1,7 +1,7 @@
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
 import Footprints from 'lucide-react-native/dist/esm/icons/footprints.mjs';
 
-import { StartSectionCard } from './StartSectionCard';
+import { StartSectionCard } from '../StartSectionCard';
 
 const { colors } = pilgrimageRouteTheme;
 

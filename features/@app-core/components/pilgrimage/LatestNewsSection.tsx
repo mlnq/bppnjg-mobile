@@ -1,10 +1,10 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { NewsIcon, pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { PilgrimageNewsCard } from '../features/news/components/PilgrimageNewsCard';
-import { useGetPilgrimageNotificationsQuery } from '../services/notificationsApi';
-import { AppLoader } from './AppLoader';
-import { CardButton } from './Card';
+import { NewsIcon, pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import { PilgrimageNewsCard } from '../../features/news/components/NewsCard';
+import { useGetPilgrimageNotificationsQuery } from '../../services/notificationsApi';
+import { AppLoader } from '../AppLoader';
+import { CardButton } from '../Card';
 
 const { colors, typography } = pilgrimageRouteTheme;
 

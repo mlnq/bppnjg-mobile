@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from 'lucide-react-native/dist/esm/icons/chevron-left.mjs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
 
 const { colors, typography } = pilgrimageRouteTheme;
 const HEADER_CONTENT_HEIGHT = 72;

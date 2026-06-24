@@ -1,10 +1,10 @@
 import Svg, { Circle } from 'react-native-svg';
 import { Text, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import type { PilgrimageDay } from '../constants/pilgrimageRoute';
-import { useUserLocation } from '../hooks/useUserLocation';
-import { getRemainingDistanceFromCurrentLocation } from '../utils/pilgrimageCurrentLocation';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import type { PilgrimageDay } from '../../constants/pilgrimageRoute';
+import { useUserLocation } from '../../hooks/useUserLocation';
+import { getRemainingDistanceFromCurrentLocation } from '../../utils/pilgrimageCurrentLocation';
 
 const { colors, typography } = pilgrimageRouteTheme;
 

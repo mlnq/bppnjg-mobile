@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
 
 const { colors, radii, typography } = pilgrimageRouteTheme;
 

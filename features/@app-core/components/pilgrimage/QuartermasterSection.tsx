@@ -1,11 +1,11 @@
 import { Text } from 'react-native';
 import CircleAlert from 'lucide-react-native/dist/esm/icons/circle-alert.mjs';
 
-import { pilgrimageRouteTheme } from '../../../packages/@app-ui';
-import { useGetQuartermasterCommentsQuery } from '../services/quartermasterApi';
-import { formatDateShort } from '../utils/formatters/formatDateTime';
-import { StartSectionCard } from './StartSectionCard';
-import { StartSectionCardSkeleton } from './StartSectionCardSkeleton';
+import { pilgrimageRouteTheme } from '../../../../packages/@app-ui';
+import { useGetQuartermasterCommentsQuery } from '../../services/quartermasterApi';
+import { formatDateShort } from '../../utils/formatters/formatDateTime';
+import { StartSectionCard } from '../StartSectionCard';
+import { StartSectionCardSkeleton } from '../StartSectionCardSkeleton';
 
 const { colors, typography } = pilgrimageRouteTheme;
 
